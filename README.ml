@@ -1,5 +1,5 @@
 # 🏠 Victus Residencias  
-![Logo Victus Residencias](imagenes/logo.png)
+![Logo Victus Residencias](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/logo.png)
 
 ## 📘 Presentación General
 
@@ -21,7 +21,7 @@ El proyecto implementa una **arquitectura distribuida basada en microservicios**
 
 ## 🧩 Modelo de Clases
 📎 **Ubicación:** `imagenes/modelo-clases.png`  
-![Modelo de Clases](imagenes/modeloClases.png)
+![Modelo de Clases](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/modeloClases.png)
 
 Representa las entidades principales del dominio:  
 `ConjuntoResidencial`, `Residente`, `Reserva`, `Administrador`, `ZonaComún`, y sus relaciones.  
@@ -31,7 +31,7 @@ Define la base estructural del sistema y sus asociaciones.
 
 ## 🧮 Modelo MER (Entidad–Relación)
 📎 **Ubicación:** `imagenes/modelo-mer.png`  
-![Modelo MER](imagenes/modeloMER.png)
+![Modelo MER](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/modeloMER.png)
 
 Este modelo refleja el esquema físico de la base de datos en PostgreSQL, definiendo llaves primarias, foráneas y relaciones 1:N y N:M entre las tablas del sistema.
 
@@ -39,7 +39,7 @@ Este modelo refleja el esquema físico de la base de datos en PostgreSQL, defini
 
 ## 🔄 Modelo de Actividades
 📎 **Ubicación:** `imagenes/modelo-actividades.png`  
-![Modelo de Actividades](imagenes/DiagramaActividades.png)
+![Modelo de Actividades](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/DiagramaActividades.png)
 
 El diagrama de actividades representa el flujo de negocio para los procesos clave:
 - Registro de conjuntos residenciales
@@ -51,7 +51,7 @@ El diagrama de actividades representa el flujo de negocio para los procesos clav
 
 ## 🧱 Modelo de Objetos
 📎 **Ubicación:** `imagenes/modelo-objetos.png`  
-![Modelo de Objetos](imagenes/ModeloObjetos.png)
+![Modelo de Objetos](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/ModeloObjetos.png)
 
 Describe instancias específicas de clases y cómo interactúan en tiempo de ejecución dentro de un escenario concreto de gestión residencial.
 
@@ -59,7 +59,7 @@ Describe instancias específicas de clases y cómo interactúan en tiempo de eje
 
 ## ⚙️ Modelo de Estados
 📎 **Ubicación:** `imagenes/modelo-estados.png`  
-![Modelo de Estados](imagenes/DiagramaEstados.png)
+![Modelo de Estados](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/DiagramaEstados.png)
 
 Muestra los estados posibles de una **Reserva**:
 - Pendiente  
@@ -72,13 +72,13 @@ Muestra los estados posibles de una **Reserva**:
 
 ## ☁️ Modelo de Despliegue
 
-
 ### 🧭 Arquitectura de referencia
 📎 **Ubicación:** `imagenes/modelo-despliegue.png`  
-![Modelo de Despliegue](imagenes/Arquitectura.png)
+![Modelo de Despliegue](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/Arquitectura.png)
+
 ### 🧭 Arquetipo de referencia
-📎 **Ubicación:** `imagenes/modelo-despliegue.png`  
-![Modelo de Despliegue](imagenes/Arquetipo.png)
+📎 **Ubicación:** `imagenes/arquetipo.png`  
+![Arquetipo](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/Arquetipo.png)
 
 ### 🧭 Arquitectura Distribuida
 Victus Residencias adopta una **arquitectura distribuida con microservicios**, donde cada módulo (Usuarios, Reservas, Administración) se despliega en contenedores independientes dentro del entorno **Azure App Service**.
@@ -91,21 +91,22 @@ Victus Residencias adopta una **arquitectura distribuida con microservicios**, d
 - OAuth2 / JWT Authentication  
 
 ### 🧩 Bloques de Construcción Desarrollados
-**Backend:**
-![Backend Components](imagenes/bloqConstDesaBack.png)
 
-**Frontend:**
-![Frontend Components](imagenes/bloqConstDesaFront.png)
+**Backend:**  
+![Backend Components](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/bloqConstDesaBack.png)
+
+**Frontend:**  
+![Frontend Components](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/bloqConstDesaFront.png)
 
 ---
 
 ## 🧮 Modelo de Paquetes
 📎 **Ubicación:** `imagenes/modelo-paquetes.png`  
-![Modelo de Paquetes](imagenes/ModeloPaquetes.png)
+![Modelo de Paquetes](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/ModeloPaquetes.png)
 
 ### 📄 Documentación del Modelo de Paquetes
 📎 **Ubicación:** `imagenes/documentacion-paquetes.png`  
-![Documentación de Paquetes](imagenes/DocPaquetes.png)
+![Documentación de Paquetes](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/DocPaquetes.png)
 
 El modelo de paquetes organiza la aplicación siguiendo una arquitectura **Hexagonal (Ports & Adapters)**, garantizando separación clara entre capas:
 - **Domain:** lógica de negocio
@@ -116,11 +117,11 @@ El modelo de paquetes organiza la aplicación siguiendo una arquitectura **Hexag
 
 ## ⚙️ Modelo de Componentes
 📎 **Ubicación:** `imagenes/modelo-componentes.png`  
-![Modelo de Componentes](imagenes/ModeloComponentes.png)
+![Modelo de Componentes](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/ModeloComponentes.png)
 
 ### 📄 Documentación de Componentes
 📎 **Ubicación:** `imagenes/documentacion-componentes.png`  
-![Documentación de Componentes](imagenes/DocComponentes.png)
+![Documentación de Componentes](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/DocComponentes.png)
 
 Se identifican:
 - Componentes **externos**: Java 21, Spring Boot, PostgreSQL JDBC.  
@@ -130,7 +131,7 @@ Se identifican:
 
 ## 🔁 Modelo de Secuencia
 📎 **Ubicación:** `imagenes/modelo-secuencia.png`  
-![Modelo de Secuencia](imagenes/ModeloSecuencias.png)
+![Modelo de Secuencia](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/ModeloSecuencias.png)
 
 El flujo describe la interacción entre los actores del sistema para el caso de uso:
 **Registrar Conjunto Residencial**
@@ -143,13 +144,13 @@ El flujo describe la interacción entre los actores del sistema para el caso de 
 
 ### 📄 Documentación del Modelo de Secuencia
 📎 **Ubicación:** `imagenes/documentacion-secuencia.png`  
-![Documentación de Secuencia](imagenes/DocSecuencia.png)
+![Documentación de Secuencia](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/DocSecuencia.png)
 
 ---
 
 ## ⚖️ Trade-Off
 📎 **Ubicación:** `imagenes/trade-off.png`  
-![Trade-Off](imagenes/trade-Off.png)
+![Trade-Off](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/trade-Off.png)
 
 Este modelo compara las decisiones arquitectónicas en términos de **seguridad, rendimiento, disponibilidad y mantenibilidad**, priorizando la integración en Azure y la modularidad del código.
 
@@ -157,7 +158,7 @@ Este modelo compara las decisiones arquitectónicas en términos de **seguridad,
 
 ## 🧠 Mapa de Empatía
 📎 **Ubicación:** `imagenes/mapa-empatia.png`  
-![Mapa de Empatía](imagenes/MapaEmpatia.png)
+![Mapa de Empatía](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/MapaEmpatia.png)
 
 El mapa identifica las percepciones, frustraciones y necesidades de los **residentes**, **administradores** y **personal de portería**, garantizando una experiencia centrada en el usuario.
 
@@ -193,3 +194,8 @@ Proyecto desarrollado por estudiantes del programa **Ingeniería de Sistemas**
 **Infraestructura:** Azure Cloud Services  
 
 ---
+
+## 📞 Contacto
+
+Para más información sobre el proyecto, visita el repositorio oficial:  
+🔗 [GitHub - UcoChallengeVictus](https://github.com/andrias01/UcoChallengeVictus)
