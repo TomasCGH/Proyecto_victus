@@ -166,6 +166,8 @@ El mapa identifica las percepciones, frustraciones y necesidades de los **reside
 
 ## 🎯 Escenarios de Calidad
 
+> **Nota:** Para mejor visualización de la tabla completa, consulta el [documento completo de escenarios](https://shorturl.at/IEAS5)
+
 ### Seguridad
 
 #### SEG-CAL_0001: Control de Acceso Basado en Roles
