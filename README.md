@@ -1,3 +1,12 @@
+## 👥 Integrantes del Proyecto
+
+| Nombre | Rol | Programa Académico | Institución |
+|---------|------|--------------------|--------------|
+| **Andrés Vélez** | Desarrollador Full Stack / Documentación Técnica | Ingeniería de Sistemas | Universidad Católica de Oriente |
+| **Juan Pablo Avendaño** | Desarrollador Frontend / UI y Diseño de Componentes | Ingeniería de Sistemas | Universidad Católica de Oriente |
+| **Tomás Gómez Cifuentes** | Desarrollador Backend / Integración con Spring Boot | Ingeniería de Sistemas | Universidad Católica de Oriente |
+
+---
 # 🏠 Victus Residencias  
 
 ![Logo Victus Residencias](https://raw.githubusercontent.com/andrias01/UcoChallengeVictus/master/imagenes/logo.png)
@@ -113,6 +122,8 @@ El modelo de paquetes organiza la aplicación siguiendo una arquitectura **Hexag
 - **Domain:** lógica de negocio
 - **Application:** casos de uso
 - **Infrastructure:** persistencia, API REST, seguridad
+
+En base del lenguaje de programación JAVA
 
 ---
 
@@ -243,6 +254,81 @@ El mapa identifica las percepciones, frustraciones y necesidades de los **reside
 - **Medida:** Tiempo total de parada < 15 min
 
 ---
+
+---
+
+## 🧱 Modelo de Paquetes – Frontend Victus Residencias
+
+![Modelo de Paquetes Frontend](./imagenes/paquetesFront.png)
+
+El modelo de paquetes del **Frontend Victus Residencias** representa la organización modular del sistema React, estructurado para mantener una **arquitectura limpia y escalable**.  
+Cada paquete agrupa elementos relacionados según su **rol funcional** en la interfaz de usuario y la lógica del cliente.
+
+### 📦 Descripción de los Paquetes
+
+| Paquete | Descripción | Relaciones principales |
+|----------|-------------|-------------------------|
+| **assets/** | Contiene íconos, imágenes y recursos gráficos utilizados por el sistema. | Importado por `components/` y `pages/`. |
+| **components/** | Contiene los componentes funcionales reutilizables que conforman la interfaz (ej. `Header`, `Dashboard`, `LoginAdmin`, `Property`). | Importa `contexts/`, `cssComponents/`, `loaders/`. |
+| **contexts/** | Define los contextos de React (`AdminContext`, `CommonZoneContext`, `PropertyContext`, `PorteroContext`) que gestionan estados globales y comunicación entre vistas. | Usado por `components/` y `pages/`. |
+| **cssComponents/** | Contiene las hojas de estilo de cada componente y los estilos globales de la aplicación. | Importado por `components/` y `loaders/`. |
+| **loaders/** | Contiene componentes visuales de carga (`LoadingCircle`, `LoadingText`) que proporcionan retroalimentación al usuario. | Usado por `components/` y `pages/`. |
+| **pages/** | Define las vistas principales del sistema (ej. `HomePage`, `LoginAdminPage`), donde se integran los componentes y se controlan las rutas del sistema. | Importa `components/`, `contexts/`, `assets/`. |
+| **resources/** | Contiene documentación interna, videos e imágenes de referencia del proyecto. | Sin dependencias directas en tiempo de ejecución. |
+
+---
+
+## 🧩 Modelo de Componentes – Frontend Victus Residencias
+
+![Modelo de Componentes Frontend](./imagenes/componentesFront.png)
+
+El modelo de componentes del **Frontend Victus Residencias** muestra la interacción entre las distintas piezas del sistema React y sus dependencias externas.  
+Cada componente cumple una función específica dentro del flujo **Vista → Lógica → Comunicación → Backend**.
+
+### ⚙️ Descripción de los Componentes
+
+| Componente | Tipo | Función principal | Dependencias |
+|-------------|------|-------------------|---------------|
+| **React 19** | Framework base | Motor principal del frontend que gestiona el ciclo de vida de los componentes y el DOM virtual. | `vite`, `react-dom` |
+| **Vite** | Bundler | Herramienta de construcción y servidor de desarrollo ultrarrápido. | — |
+| **React Router DOM 7.4.x** | Librería | Controla la navegación SPA y la gestión de rutas (`/home`, `/login-admin`, etc.). | `react` |
+| **React Icons** | Librería | Provee íconos vectoriales reutilizables para la interfaz. | `react` |
+| **Componentes UI (propios)** | Propio | Elementos visuales del sistema (`Dashboard`, `Header`, `NavBurguer`, `AdminManagement`, etc.). | `contexts`, `cssComponents` |
+| **Contextos Globales** | Propio | Gestionan el estado global y la comunicación entre componentes React. | `react` |
+| **CSS Components / Tailwind** | Propio | Controla la apariencia, diseño y coherencia visual del frontend. | — |
+| **Loaders** | Propio | Proveen animaciones y retroalimentación visual durante procesos asíncronos. | `cssComponents` |
+| **API Backend (VictusResidencias)** | Externo | Realiza la comunicación con el backend Spring Boot mediante llamadas HTTP (fetch o axios). | `react` |
+| **GitHub Pages / Azure Static Web Apps** | Externo | Infraestructura de despliegue para el frontend React. | `vite build` |
+
+---
+
+## 🧠 Resumen Técnico
+
+| Categoría | Propósito | Tecnología |
+|------------|------------|-------------|
+| **Framework base** | Construcción modular de la interfaz de usuario | React 19 + Vite |
+| **Arquitectura de presentación** | Componentes funcionales, Context API y Hooks | React Context + Hooks |
+| **Diseño visual** | Estilos desacoplados y componentes reutilizables | Tailwind / CSS |
+| **Navegación** | Rutas SPA y manejo de estado entre vistas | React Router DOM |
+| **Comunicación backend** | Consumo de servicios REST del backend VictusResidencias | Fetch API / Axios |
+| **Infraestructura** | Despliegue estático y CI/CD | GitHub Pages / Azure Static Web Apps |
+
+---
+
+## 👥 Integrantes del Proyecto
+
+| Nombre | Rol | Programa Académico | Institución |
+|---------|------|--------------------|--------------|
+| **Andrés Vélez** | Desarrollador Full Stack / Documentación Técnica | Ingeniería de Sistemas | Universidad Católica de Oriente |
+| **Juan Pablo Avendaño** | Desarrollador Frontend / UI y Diseño de Componentes | Ingeniería de Sistemas | Universidad Católica de Oriente |
+| **Tomás Gómez Cifuentes** | Desarrollador Backend / Integración con Spring Boot | Ingeniería de Sistemas | Universidad Católica de Oriente |
+
+---
+
+📘 *Proyecto académico desarrollado como parte del curso de Ingenieria de Software 2 — Universidad Católica de Oriente (2025).*
+
+---
+
 
 ## 🧾 Autoría
 
