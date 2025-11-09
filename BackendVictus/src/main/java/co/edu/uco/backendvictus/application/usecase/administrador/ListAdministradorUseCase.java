@@ -12,12 +12,15 @@ import co.edu.uco.backendvictus.domain.port.AdministradorRepository;
 public class ListAdministradorUseCase {
 
     private final AdministradorRepository administradorRepository;
+    private final AdministradorApplicationMapper mapper;
 
-    public ListAdministradorUseCase(final AdministradorRepository administradorRepository) {
+    public ListAdministradorUseCase(final AdministradorRepository administradorRepository,
+            final AdministradorApplicationMapper mapper) {
         this.administradorRepository = administradorRepository;
+        this.mapper = mapper;
     }
 
     public List<AdministradorResponse> execute() {
-        return AdministradorApplicationMapper.toResponseList(administradorRepository.findAll());
+        return mapper.toResponseList(administradorRepository.findAll());
     }
 }

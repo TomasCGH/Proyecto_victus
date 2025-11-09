@@ -12,12 +12,15 @@ import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
 public class ListConjuntoUseCase {
 
     private final ConjuntoResidencialRepository conjuntoRepository;
+    private final ConjuntoApplicationMapper mapper;
 
-    public ListConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository) {
+    public ListConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
+            final ConjuntoApplicationMapper mapper) {
         this.conjuntoRepository = conjuntoRepository;
+        this.mapper = mapper;
     }
 
     public List<ConjuntoResponse> execute() {
-        return ConjuntoApplicationMapper.toResponseList(conjuntoRepository.findAll());
+        return mapper.toResponseList(conjuntoRepository.findAll());
     }
 }

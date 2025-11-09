@@ -20,11 +20,13 @@ public class CreateCiudadUseCase implements UseCase<CiudadCreateRequest, CiudadR
 
     private final CiudadRepository ciudadRepository;
     private final DepartamentoRepository departamentoRepository;
+    private final CiudadApplicationMapper mapper;
 
     public CreateCiudadUseCase(final CiudadRepository ciudadRepository,
-            final DepartamentoRepository departamentoRepository) {
+            final DepartamentoRepository departamentoRepository, final CiudadApplicationMapper mapper) {
         this.ciudadRepository = ciudadRepository;
         this.departamentoRepository = departamentoRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -33,8 +35,8 @@ public class CreateCiudadUseCase implements UseCase<CiudadCreateRequest, CiudadR
         final Departamento departamento = departamentoRepository.findById(request.departamentoId())
                 .orElseThrow(() -> new ApplicationException("Departamento no encontrado"));
 
-        final Ciudad ciudad = Ciudad.create(UUID.randomUUID(), request.nombre(), departamento, request.activo());
+        final Ciudad ciudad = mapper.toDomain(UUID.randomUUID(), request, departamento);
         final Ciudad persisted = ciudadRepository.save(ciudad);
-        return CiudadApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

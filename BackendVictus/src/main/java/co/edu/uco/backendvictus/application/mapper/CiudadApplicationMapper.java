@@ -1,21 +1,30 @@
 package co.edu.uco.backendvictus.application.mapper;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import co.edu.uco.backendvictus.application.dto.ciudad.CiudadCreateRequest;
 import co.edu.uco.backendvictus.application.dto.ciudad.CiudadResponse;
+import co.edu.uco.backendvictus.application.dto.ciudad.CiudadUpdateRequest;
 import co.edu.uco.backendvictus.domain.model.Ciudad;
+import co.edu.uco.backendvictus.domain.model.Departamento;
 
-public final class CiudadApplicationMapper {
+@Mapper(componentModel = "spring")
+public abstract class CiudadApplicationMapper {
 
-    private CiudadApplicationMapper() {
+    public Ciudad toDomain(final UUID id, final CiudadCreateRequest request, final Departamento departamento) {
+        return Ciudad.create(id, request.nombre(), departamento, request.activo());
     }
 
-    public static CiudadResponse toResponse(final Ciudad ciudad) {
-        return new CiudadResponse(ciudad.getId(), ciudad.getDepartamento().getId(), ciudad.getNombre(),
-                ciudad.isActivo());
+    public Ciudad toDomain(final CiudadUpdateRequest request, final Departamento departamento) {
+        return Ciudad.create(request.id(), request.nombre(), departamento, request.activo());
     }
 
-    public static List<CiudadResponse> toResponseList(final List<Ciudad> ciudades) {
-        return ciudades.stream().map(CiudadApplicationMapper::toResponse).toList();
-    }
+    @Mapping(target = "departamentoId", source = "departamento.id")
+    public abstract CiudadResponse toResponse(Ciudad ciudad);
+
+    public abstract List<CiudadResponse> toResponseList(List<Ciudad> ciudades);
 }

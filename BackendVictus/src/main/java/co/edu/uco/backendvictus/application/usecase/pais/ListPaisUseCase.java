@@ -12,12 +12,14 @@ import co.edu.uco.backendvictus.domain.port.PaisRepository;
 public class ListPaisUseCase {
 
     private final PaisRepository repository;
+    private final PaisApplicationMapper mapper;
 
-    public ListPaisUseCase(final PaisRepository repository) {
+    public ListPaisUseCase(final PaisRepository repository, final PaisApplicationMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     public List<PaisResponse> execute() {
-        return PaisApplicationMapper.toResponseList(repository.findAll());
+        return mapper.toResponseList(repository.findAll());
     }
 }

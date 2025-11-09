@@ -16,16 +16,19 @@ import co.edu.uco.backendvictus.domain.port.AdministradorRepository;
 public class CreateAdministradorUseCase implements UseCase<AdministradorCreateRequest, AdministradorResponse> {
 
     private final AdministradorRepository administradorRepository;
+    private final AdministradorApplicationMapper mapper;
 
-    public CreateAdministradorUseCase(final AdministradorRepository administradorRepository) {
+    public CreateAdministradorUseCase(final AdministradorRepository administradorRepository,
+            final AdministradorApplicationMapper mapper) {
         this.administradorRepository = administradorRepository;
+        this.mapper = mapper;
     }
 
     @Override
     @Transactional
     public AdministradorResponse execute(final AdministradorCreateRequest request) {
-        final Administrador administrador = AdministradorApplicationMapper.toDomain(UUID.randomUUID(), request);
+        final Administrador administrador = mapper.toDomain(UUID.randomUUID(), request);
         final Administrador persisted = administradorRepository.save(administrador);
-        return AdministradorApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

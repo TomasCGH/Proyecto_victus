@@ -17,31 +17,33 @@ public class CiudadRepositoryAdapter implements CiudadRepository {
 
     private final CiudadJpaRepository ciudadJpaRepository;
     private final DepartamentoJpaRepository departamentoJpaRepository;
+    private final CiudadEntityMapper mapper;
 
     public CiudadRepositoryAdapter(final CiudadJpaRepository ciudadJpaRepository,
-            final DepartamentoJpaRepository departamentoJpaRepository) {
+            final DepartamentoJpaRepository departamentoJpaRepository, final CiudadEntityMapper mapper) {
         this.ciudadJpaRepository = ciudadJpaRepository;
         this.departamentoJpaRepository = departamentoJpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public Ciudad save(final Ciudad ciudad) {
         final DepartamentoJpaEntity departamento =
                 departamentoJpaRepository.getReferenceById(ciudad.getDepartamento().getId());
-        final CiudadJpaEntity entity = new CiudadJpaEntity(ciudad.getId(), departamento, ciudad.getNombre(),
-                ciudad.isActivo());
+        final CiudadJpaEntity entity = mapper.toEntity(ciudad);
+        entity.setDepartamento(departamento);
         final CiudadJpaEntity saved = ciudadJpaRepository.save(entity);
-        return CiudadEntityMapper.toDomain(saved);
+        return mapper.toDomain(saved);
     }
 
     @Override
     public Optional<Ciudad> findById(final UUID id) {
-        return ciudadJpaRepository.findById(id).map(CiudadEntityMapper::toDomain);
+        return ciudadJpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public List<Ciudad> findAll() {
-        return ciudadJpaRepository.findAll().stream().map(CiudadEntityMapper::toDomain).toList();
+        return ciudadJpaRepository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override

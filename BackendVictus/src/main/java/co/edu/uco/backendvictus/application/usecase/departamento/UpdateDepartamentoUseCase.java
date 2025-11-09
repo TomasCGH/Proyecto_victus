@@ -17,11 +17,13 @@ public class UpdateDepartamentoUseCase implements UseCase<DepartamentoUpdateRequ
 
     private final DepartamentoRepository departamentoRepository;
     private final PaisRepository paisRepository;
+    private final DepartamentoApplicationMapper mapper;
 
     public UpdateDepartamentoUseCase(final DepartamentoRepository departamentoRepository,
-            final PaisRepository paisRepository) {
+            final PaisRepository paisRepository, final DepartamentoApplicationMapper mapper) {
         this.departamentoRepository = departamentoRepository;
         this.paisRepository = paisRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -35,6 +37,6 @@ public class UpdateDepartamentoUseCase implements UseCase<DepartamentoUpdateRequ
 
         final Departamento actualizado = existente.update(request.nombre(), pais, request.activo());
         final Departamento persisted = departamentoRepository.save(actualizado);
-        return DepartamentoApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

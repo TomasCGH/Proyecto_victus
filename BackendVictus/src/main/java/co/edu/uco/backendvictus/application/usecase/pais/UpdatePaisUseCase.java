@@ -14,9 +14,11 @@ import co.edu.uco.backendvictus.domain.port.PaisRepository;
 public class UpdatePaisUseCase implements UseCase<PaisUpdateRequest, PaisResponse> {
 
     private final PaisRepository repository;
+    private final PaisApplicationMapper mapper;
 
-    public UpdatePaisUseCase(final PaisRepository repository) {
+    public UpdatePaisUseCase(final PaisRepository repository, final PaisApplicationMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -25,8 +27,8 @@ public class UpdatePaisUseCase implements UseCase<PaisUpdateRequest, PaisRespons
         repository.findById(request.id())
                 .orElseThrow(() -> new ApplicationException("Pais no encontrado"));
 
-        final Pais actualizado = PaisApplicationMapper.toDomain(request);
+        final Pais actualizado = mapper.toDomain(request);
         final Pais persisted = repository.save(actualizado);
-        return PaisApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

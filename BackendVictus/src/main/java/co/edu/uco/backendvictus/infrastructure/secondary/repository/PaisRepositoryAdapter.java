@@ -15,26 +15,28 @@ import co.edu.uco.backendvictus.infrastructure.secondary.mapper.PaisEntityMapper
 public class PaisRepositoryAdapter implements PaisRepository {
 
     private final PaisJpaRepository repository;
+    private final PaisEntityMapper mapper;
 
-    public PaisRepositoryAdapter(final PaisJpaRepository repository) {
+    public PaisRepositoryAdapter(final PaisJpaRepository repository, final PaisEntityMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
     public Pais save(final Pais pais) {
-        final PaisJpaEntity entity = PaisEntityMapper.toEntity(pais);
+        final PaisJpaEntity entity = mapper.toEntity(pais);
         final PaisJpaEntity saved = repository.save(entity);
-        return PaisEntityMapper.toDomain(saved);
+        return mapper.toDomain(saved);
     }
 
     @Override
     public Optional<Pais> findById(final UUID id) {
-        return repository.findById(id).map(PaisEntityMapper::toDomain);
+        return repository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public List<Pais> findAll() {
-        return repository.findAll().stream().map(PaisEntityMapper::toDomain).toList();
+        return repository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override

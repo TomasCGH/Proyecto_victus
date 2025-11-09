@@ -1,22 +1,25 @@
 package co.edu.uco.backendvictus.infrastructure.secondary.mapper;
 
+import org.mapstruct.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import co.edu.uco.backendvictus.domain.model.Ciudad;
 import co.edu.uco.backendvictus.domain.model.Departamento;
 import co.edu.uco.backendvictus.infrastructure.secondary.entity.CiudadJpaEntity;
-import co.edu.uco.backendvictus.infrastructure.secondary.entity.DepartamentoJpaEntity;
 
-public final class CiudadEntityMapper {
+@Mapper(componentModel = "spring", uses = DepartamentoEntityMapper.class)
+public abstract class CiudadEntityMapper {
 
-    private CiudadEntityMapper() {
-    }
+    @Autowired
+    private DepartamentoEntityMapper departamentoEntityMapper;
 
-    public static CiudadJpaEntity toEntity(final Ciudad ciudad) {
-        final DepartamentoJpaEntity departamento = DepartamentoEntityMapper.toEntity(ciudad.getDepartamento());
-        return new CiudadJpaEntity(ciudad.getId(), departamento, ciudad.getNombre(), ciudad.isActivo());
-    }
+    public abstract CiudadJpaEntity toEntity(Ciudad ciudad);
 
-    public static Ciudad toDomain(final CiudadJpaEntity entity) {
-        final Departamento departamento = DepartamentoEntityMapper.toDomain(entity.getDepartamento());
+    public Ciudad toDomain(final CiudadJpaEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        final Departamento departamento = departamentoEntityMapper.toDomain(entity.getDepartamento());
         return Ciudad.create(entity.getId(), entity.getNombre(), departamento, entity.isActivo());
     }
 }

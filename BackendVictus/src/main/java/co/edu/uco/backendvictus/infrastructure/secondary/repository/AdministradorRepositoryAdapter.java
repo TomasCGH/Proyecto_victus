@@ -15,26 +15,29 @@ import co.edu.uco.backendvictus.infrastructure.secondary.mapper.AdministradorEnt
 public class AdministradorRepositoryAdapter implements AdministradorRepository {
 
     private final AdministradorJpaRepository administradorJpaRepository;
+    private final AdministradorEntityMapper mapper;
 
-    public AdministradorRepositoryAdapter(final AdministradorJpaRepository administradorJpaRepository) {
+    public AdministradorRepositoryAdapter(final AdministradorJpaRepository administradorJpaRepository,
+            final AdministradorEntityMapper mapper) {
         this.administradorJpaRepository = administradorJpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public Administrador save(final Administrador administrador) {
-        final AdministradorJpaEntity entity = AdministradorEntityMapper.toEntity(administrador);
+        final AdministradorJpaEntity entity = mapper.toEntity(administrador);
         final AdministradorJpaEntity saved = administradorJpaRepository.save(entity);
-        return AdministradorEntityMapper.toDomain(saved);
+        return mapper.toDomain(saved);
     }
 
     @Override
     public Optional<Administrador> findById(final UUID id) {
-        return administradorJpaRepository.findById(id).map(AdministradorEntityMapper::toDomain);
+        return administradorJpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public List<Administrador> findAll() {
-        return administradorJpaRepository.findAll().stream().map(AdministradorEntityMapper::toDomain).toList();
+        return administradorJpaRepository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override

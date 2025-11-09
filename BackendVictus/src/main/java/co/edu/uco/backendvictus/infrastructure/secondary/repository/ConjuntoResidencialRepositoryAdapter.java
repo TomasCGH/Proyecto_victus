@@ -19,12 +19,15 @@ public class ConjuntoResidencialRepositoryAdapter implements ConjuntoResidencial
     private final ConjuntoResidencialJpaRepository conjuntoJpaRepository;
     private final CiudadJpaRepository ciudadJpaRepository;
     private final AdministradorJpaRepository administradorJpaRepository;
+    private final ConjuntoResidencialEntityMapper mapper;
 
     public ConjuntoResidencialRepositoryAdapter(final ConjuntoResidencialJpaRepository conjuntoJpaRepository,
-            final CiudadJpaRepository ciudadJpaRepository, final AdministradorJpaRepository administradorJpaRepository) {
+            final CiudadJpaRepository ciudadJpaRepository, final AdministradorJpaRepository administradorJpaRepository,
+            final ConjuntoResidencialEntityMapper mapper) {
         this.conjuntoJpaRepository = conjuntoJpaRepository;
         this.ciudadJpaRepository = ciudadJpaRepository;
         this.administradorJpaRepository = administradorJpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -32,20 +35,21 @@ public class ConjuntoResidencialRepositoryAdapter implements ConjuntoResidencial
         final CiudadJpaEntity ciudad = ciudadJpaRepository.getReferenceById(conjuntoResidencial.getCiudad().getId());
         final AdministradorJpaEntity administrador =
                 administradorJpaRepository.getReferenceById(conjuntoResidencial.getAdministrador().getId());
-        final ConjuntoResidencialJpaEntity entity = ConjuntoResidencialEntityMapper.toEntity(conjuntoResidencial,
-                ciudad, administrador);
+        final ConjuntoResidencialJpaEntity entity = mapper.toEntity(conjuntoResidencial);
+        entity.setCiudad(ciudad);
+        entity.setAdministrador(administrador);
         final ConjuntoResidencialJpaEntity saved = conjuntoJpaRepository.save(entity);
-        return ConjuntoResidencialEntityMapper.toDomain(saved);
+        return mapper.toDomain(saved);
     }
 
     @Override
     public Optional<ConjuntoResidencial> findById(final UUID id) {
-        return conjuntoJpaRepository.findById(id).map(ConjuntoResidencialEntityMapper::toDomain);
+        return conjuntoJpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public List<ConjuntoResidencial> findAll() {
-        return conjuntoJpaRepository.findAll().stream().map(ConjuntoResidencialEntityMapper::toDomain).toList();
+        return conjuntoJpaRepository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override

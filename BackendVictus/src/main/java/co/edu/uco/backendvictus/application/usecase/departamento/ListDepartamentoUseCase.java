@@ -12,12 +12,15 @@ import co.edu.uco.backendvictus.domain.port.DepartamentoRepository;
 public class ListDepartamentoUseCase {
 
     private final DepartamentoRepository departamentoRepository;
+    private final DepartamentoApplicationMapper mapper;
 
-    public ListDepartamentoUseCase(final DepartamentoRepository departamentoRepository) {
+    public ListDepartamentoUseCase(final DepartamentoRepository departamentoRepository,
+            final DepartamentoApplicationMapper mapper) {
         this.departamentoRepository = departamentoRepository;
+        this.mapper = mapper;
     }
 
     public List<DepartamentoResponse> execute() {
-        return DepartamentoApplicationMapper.toResponseList(departamentoRepository.findAll());
+        return mapper.toResponseList(departamentoRepository.findAll());
     }
 }

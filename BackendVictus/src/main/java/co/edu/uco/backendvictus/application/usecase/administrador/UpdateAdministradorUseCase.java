@@ -14,9 +14,12 @@ import co.edu.uco.backendvictus.domain.port.AdministradorRepository;
 public class UpdateAdministradorUseCase implements UseCase<AdministradorUpdateRequest, AdministradorResponse> {
 
     private final AdministradorRepository administradorRepository;
+    private final AdministradorApplicationMapper mapper;
 
-    public UpdateAdministradorUseCase(final AdministradorRepository administradorRepository) {
+    public UpdateAdministradorUseCase(final AdministradorRepository administradorRepository,
+            final AdministradorApplicationMapper mapper) {
         this.administradorRepository = administradorRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -29,6 +32,6 @@ public class UpdateAdministradorUseCase implements UseCase<AdministradorUpdateRe
                 request.primerApellido(), request.segundoApellido(), request.email(), request.telefono(),
                 request.activo());
         final Administrador persisted = administradorRepository.save(actualizado);
-        return AdministradorApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

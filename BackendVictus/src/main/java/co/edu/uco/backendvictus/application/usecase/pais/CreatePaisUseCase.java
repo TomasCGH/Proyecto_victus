@@ -16,16 +16,18 @@ import co.edu.uco.backendvictus.domain.port.PaisRepository;
 public class CreatePaisUseCase implements UseCase<PaisCreateRequest, PaisResponse> {
 
     private final PaisRepository repository;
+    private final PaisApplicationMapper mapper;
 
-    public CreatePaisUseCase(final PaisRepository repository) {
+    public CreatePaisUseCase(final PaisRepository repository, final PaisApplicationMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
     @Transactional
     public PaisResponse execute(final PaisCreateRequest request) {
-        final Pais pais = PaisApplicationMapper.toDomain(UUID.randomUUID(), request);
+        final Pais pais = mapper.toDomain(UUID.randomUUID(), request);
         final Pais persisted = repository.save(pais);
-        return PaisApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

@@ -17,11 +17,13 @@ public class UpdateCiudadUseCase implements UseCase<CiudadUpdateRequest, CiudadR
 
     private final CiudadRepository ciudadRepository;
     private final DepartamentoRepository departamentoRepository;
+    private final CiudadApplicationMapper mapper;
 
     public UpdateCiudadUseCase(final CiudadRepository ciudadRepository,
-            final DepartamentoRepository departamentoRepository) {
+            final DepartamentoRepository departamentoRepository, final CiudadApplicationMapper mapper) {
         this.ciudadRepository = ciudadRepository;
         this.departamentoRepository = departamentoRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -35,6 +37,6 @@ public class UpdateCiudadUseCase implements UseCase<CiudadUpdateRequest, CiudadR
 
         final Ciudad actualizada = existente.update(request.nombre(), departamento, request.activo());
         final Ciudad persisted = ciudadRepository.save(actualizada);
-        return CiudadApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

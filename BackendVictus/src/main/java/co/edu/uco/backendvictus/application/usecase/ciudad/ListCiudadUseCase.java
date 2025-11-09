@@ -12,12 +12,14 @@ import co.edu.uco.backendvictus.domain.port.CiudadRepository;
 public class ListCiudadUseCase {
 
     private final CiudadRepository ciudadRepository;
+    private final CiudadApplicationMapper mapper;
 
-    public ListCiudadUseCase(final CiudadRepository ciudadRepository) {
+    public ListCiudadUseCase(final CiudadRepository ciudadRepository, final CiudadApplicationMapper mapper) {
         this.ciudadRepository = ciudadRepository;
+        this.mapper = mapper;
     }
 
     public List<CiudadResponse> execute() {
-        return CiudadApplicationMapper.toResponseList(ciudadRepository.findAll());
+        return mapper.toResponseList(ciudadRepository.findAll());
     }
 }

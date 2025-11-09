@@ -23,12 +23,15 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
     private final ConjuntoResidencialRepository conjuntoRepository;
     private final CiudadRepository ciudadRepository;
     private final AdministradorRepository administradorRepository;
+    private final ConjuntoApplicationMapper mapper;
 
     public CreateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
-            final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository) {
+            final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
+            final ConjuntoApplicationMapper mapper) {
         this.conjuntoRepository = conjuntoRepository;
         this.ciudadRepository = ciudadRepository;
         this.administradorRepository = administradorRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -39,9 +42,9 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
         final Administrador administrador = administradorRepository.findById(request.administradorId())
                 .orElseThrow(() -> new ApplicationException("Administrador no encontrado"));
 
-        final ConjuntoResidencial conjuntoResidencial = ConjuntoApplicationMapper.toDomain(UUID.randomUUID(), request,
-                ciudad, administrador);
+        final ConjuntoResidencial conjuntoResidencial = mapper.toDomain(UUID.randomUUID(), request, ciudad,
+                administrador);
         final ConjuntoResidencial persisted = conjuntoRepository.save(conjuntoResidencial);
-        return ConjuntoApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

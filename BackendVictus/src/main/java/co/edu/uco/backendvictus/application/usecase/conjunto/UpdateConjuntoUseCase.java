@@ -20,12 +20,15 @@ public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, Con
     private final ConjuntoResidencialRepository conjuntoRepository;
     private final CiudadRepository ciudadRepository;
     private final AdministradorRepository administradorRepository;
+    private final ConjuntoApplicationMapper mapper;
 
     public UpdateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
-            final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository) {
+            final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
+            final ConjuntoApplicationMapper mapper) {
         this.conjuntoRepository = conjuntoRepository;
         this.ciudadRepository = ciudadRepository;
         this.administradorRepository = administradorRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -42,6 +45,6 @@ public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, Con
         final ConjuntoResidencial actualizado = existente.update(request.nombre(), request.direccion(), ciudad,
                 administrador, request.activo());
         final ConjuntoResidencial persisted = conjuntoRepository.save(actualizado);
-        return ConjuntoApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

@@ -20,11 +20,13 @@ public class CreateDepartamentoUseCase implements UseCase<DepartamentoCreateRequ
 
     private final DepartamentoRepository departamentoRepository;
     private final PaisRepository paisRepository;
+    private final DepartamentoApplicationMapper mapper;
 
     public CreateDepartamentoUseCase(final DepartamentoRepository departamentoRepository,
-            final PaisRepository paisRepository) {
+            final PaisRepository paisRepository, final DepartamentoApplicationMapper mapper) {
         this.departamentoRepository = departamentoRepository;
         this.paisRepository = paisRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -33,9 +35,8 @@ public class CreateDepartamentoUseCase implements UseCase<DepartamentoCreateRequ
         final Pais pais = paisRepository.findById(request.paisId())
                 .orElseThrow(() -> new ApplicationException("Pais no encontrado"));
 
-        final Departamento departamento = Departamento.create(UUID.randomUUID(), request.nombre(), pais,
-                request.activo());
+        final Departamento departamento = mapper.toDomain(UUID.randomUUID(), request, pais);
         final Departamento persisted = departamentoRepository.save(departamento);
-        return DepartamentoApplicationMapper.toResponse(persisted);
+        return mapper.toResponse(persisted);
     }
 }

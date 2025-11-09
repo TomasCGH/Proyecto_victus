@@ -17,30 +17,32 @@ public class DepartamentoRepositoryAdapter implements DepartamentoRepository {
 
     private final DepartamentoJpaRepository departamentoJpaRepository;
     private final PaisJpaRepository paisJpaRepository;
+    private final DepartamentoEntityMapper mapper;
 
     public DepartamentoRepositoryAdapter(final DepartamentoJpaRepository departamentoJpaRepository,
-            final PaisJpaRepository paisJpaRepository) {
+            final PaisJpaRepository paisJpaRepository, final DepartamentoEntityMapper mapper) {
         this.departamentoJpaRepository = departamentoJpaRepository;
         this.paisJpaRepository = paisJpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public Departamento save(final Departamento departamento) {
         final PaisJpaEntity paisReference = paisJpaRepository.getReferenceById(departamento.getPais().getId());
-        final DepartamentoJpaEntity entity = new DepartamentoJpaEntity(departamento.getId(), paisReference,
-                departamento.getNombre(), departamento.isActivo());
+        final DepartamentoJpaEntity entity = mapper.toEntity(departamento);
+        entity.setPais(paisReference);
         final DepartamentoJpaEntity saved = departamentoJpaRepository.save(entity);
-        return DepartamentoEntityMapper.toDomain(saved);
+        return mapper.toDomain(saved);
     }
 
     @Override
     public Optional<Departamento> findById(final UUID id) {
-        return departamentoJpaRepository.findById(id).map(DepartamentoEntityMapper::toDomain);
+        return departamentoJpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public List<Departamento> findAll() {
-        return departamentoJpaRepository.findAll().stream().map(DepartamentoEntityMapper::toDomain).toList();
+        return departamentoJpaRepository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override
