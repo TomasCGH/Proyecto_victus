@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.application.mapper;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
@@ -25,6 +24,4 @@ public abstract class CiudadApplicationMapper {
 
     @Mapping(target = "departamentoId", source = "departamento.id")
     public abstract CiudadResponse toResponse(Ciudad ciudad);
-
-    public abstract List<CiudadResponse> toResponseList(List<Ciudad> ciudades);
 }

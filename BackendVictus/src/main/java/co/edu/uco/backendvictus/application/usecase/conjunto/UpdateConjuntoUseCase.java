@@ -1,11 +1,13 @@
 package co.edu.uco.backendvictus.application.usecase.conjunto;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import reactor.core.publisher.Mono;
 
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoUpdateRequest;
 import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
+import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.domain.model.Administrador;
 import co.edu.uco.backendvictus.domain.model.Ciudad;
@@ -32,19 +34,17 @@ public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, Con
     }
 
     @Override
-    @Transactional
-    public ConjuntoResponse execute(final ConjuntoUpdateRequest request) {
-        final ConjuntoResidencial existente = conjuntoRepository.findById(request.id())
-                .orElseThrow(() -> new ApplicationException("Conjunto residencial no encontrado"));
-
-        final Ciudad ciudad = ciudadRepository.findById(request.ciudadId())
-                .orElseThrow(() -> new ApplicationException("Ciudad no encontrada"));
-        final Administrador administrador = administradorRepository.findById(request.administradorId())
-                .orElseThrow(() -> new ApplicationException("Administrador no encontrado"));
-
-        final ConjuntoResidencial actualizado = existente.update(request.nombre(), request.direccion(), ciudad,
-                administrador, request.activo());
-        final ConjuntoResidencial persisted = conjuntoRepository.save(actualizado);
-        return mapper.toResponse(persisted);
+    public Mono<ConjuntoResponse> execute(final ConjuntoUpdateRequest request) {
+        return conjuntoRepository.findById(request.id())
+                .switchIfEmpty(Mono.error(new ApplicationException("Conjunto residencial no encontrado")))
+                .flatMap(existente -> Mono.zip(
+                        ciudadRepository.findById(request.ciudadId())
+                                .switchIfEmpty(Mono.error(new ApplicationException("Ciudad no encontrada"))),
+                        administradorRepository.findById(request.administradorId())
+                                .switchIfEmpty(Mono.error(new ApplicationException("Administrador no encontrado")))
+                ).map(tuple -> existente.update(request.nombre(), request.direccion(), tuple.getT1(), tuple.getT2(),
+                        request.activo())))
+                .flatMap(conjuntoRepository::save)
+                .map(mapper::toResponse);
     }
 }

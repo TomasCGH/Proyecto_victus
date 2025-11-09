@@ -1,8 +1,8 @@
 package co.edu.uco.backendvictus.application.usecase.ciudad;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
+
+import reactor.core.publisher.Flux;
 
 import co.edu.uco.backendvictus.application.dto.ciudad.CiudadResponse;
 import co.edu.uco.backendvictus.application.mapper.CiudadApplicationMapper;
@@ -19,7 +19,7 @@ public class ListCiudadUseCase {
         this.mapper = mapper;
     }
 
-    public List<CiudadResponse> execute() {
-        return mapper.toResponseList(ciudadRepository.findAll());
+    public Flux<CiudadResponse> execute() {
+        return ciudadRepository.findAll().map(mapper::toResponse);
     }
 }

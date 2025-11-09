@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.infrastructure.primary.controller;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -22,9 +21,11 @@ import co.edu.uco.backendvictus.application.usecase.departamento.DeleteDepartame
 import co.edu.uco.backendvictus.application.usecase.departamento.ListDepartamentoUseCase;
 import co.edu.uco.backendvictus.application.usecase.departamento.UpdateDepartamentoUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/departamentos")
+@RequestMapping("/uco-challenge/api/v1/departamentos")
 public class DepartamentoController {
 
     private final CreateDepartamentoUseCase createDepartamentoUseCase;
@@ -43,29 +44,36 @@ public class DepartamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<DepartamentoResponse> crear(@RequestBody final DepartamentoCreateRequest request) {
+    public Mono<ResponseEntity<ApiSuccessResponse<DepartamentoResponse>>> crear(
+            @RequestBody final DepartamentoCreateRequest request) {
         final DepartamentoCreateRequest sanitized = new DepartamentoCreateRequest(request.paisId(),
                 DataSanitizer.sanitizeText(request.nombre()), request.activo());
-        final DepartamentoResponse response = createDepartamentoUseCase.execute(sanitized);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return createDepartamentoUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
     }
 
     @GetMapping
-    public List<DepartamentoResponse> listar() {
-        return listDepartamentoUseCase.execute();
+    public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<DepartamentoResponse>>>> listar() {
+        return listDepartamentoUseCase.execute().collectList()
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public DepartamentoResponse actualizar(@PathVariable("id") final UUID id,
-            @RequestBody final DepartamentoUpdateRequest request) {
+    public Mono<ResponseEntity<ApiSuccessResponse<DepartamentoResponse>>> actualizar(
+            @PathVariable("id") final UUID id, @RequestBody final DepartamentoUpdateRequest request) {
         final DepartamentoUpdateRequest sanitized = new DepartamentoUpdateRequest(id, request.paisId(),
                 DataSanitizer.sanitizeText(request.nombre()), request.activo());
-        return updateDepartamentoUseCase.execute(sanitized);
+        return updateDepartamentoUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable("id") final UUID id) {
-        deleteDepartamentoUseCase.execute(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
+        return deleteDepartamentoUseCase.execute(id)
+                .thenReturn(ApiSuccessResponse.of(null))
+                .map(ResponseEntity::ok);
     }
 }

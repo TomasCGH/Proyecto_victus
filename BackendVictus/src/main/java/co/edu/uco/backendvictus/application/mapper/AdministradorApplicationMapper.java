@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.application.mapper;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
@@ -25,6 +24,4 @@ public abstract class AdministradorApplicationMapper {
     }
 
     public abstract AdministradorResponse toResponse(Administrador administrador);
-
-    public abstract List<AdministradorResponse> toResponseList(List<Administrador> administradores);
 }

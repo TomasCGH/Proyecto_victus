@@ -1,7 +1,9 @@
 package co.edu.uco.backendvictus.application.usecase;
 
+import reactor.core.publisher.Mono;
+
 @FunctionalInterface
 public interface UseCase<I, O> {
 
-    O execute(I input);
+    Mono<O> execute(I input);
 }

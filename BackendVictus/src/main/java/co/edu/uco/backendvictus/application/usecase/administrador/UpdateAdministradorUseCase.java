@@ -1,11 +1,13 @@
 package co.edu.uco.backendvictus.application.usecase.administrador;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import reactor.core.publisher.Mono;
 
 import co.edu.uco.backendvictus.application.dto.administrador.AdministradorResponse;
 import co.edu.uco.backendvictus.application.dto.administrador.AdministradorUpdateRequest;
 import co.edu.uco.backendvictus.application.mapper.AdministradorApplicationMapper;
+import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.domain.model.Administrador;
 import co.edu.uco.backendvictus.domain.port.AdministradorRepository;
@@ -23,15 +25,13 @@ public class UpdateAdministradorUseCase implements UseCase<AdministradorUpdateRe
     }
 
     @Override
-    @Transactional
-    public AdministradorResponse execute(final AdministradorUpdateRequest request) {
-        final Administrador existente = administradorRepository.findById(request.id())
-                .orElseThrow(() -> new ApplicationException("Administrador no encontrado"));
-
-        final Administrador actualizado = existente.update(request.primerNombre(), request.segundoNombres(),
-                request.primerApellido(), request.segundoApellido(), request.email(), request.telefono(),
-                request.activo());
-        final Administrador persisted = administradorRepository.save(actualizado);
-        return mapper.toResponse(persisted);
+    public Mono<AdministradorResponse> execute(final AdministradorUpdateRequest request) {
+        return administradorRepository.findById(request.id())
+                .switchIfEmpty(Mono.error(new ApplicationException("Administrador no encontrado")))
+                .map(existente -> existente.update(request.primerNombre(), request.segundoNombres(),
+                        request.primerApellido(), request.segundoApellido(), request.email(), request.telefono(),
+                        request.activo()))
+                .flatMap(administradorRepository::save)
+                .map(mapper::toResponse);
     }
 }

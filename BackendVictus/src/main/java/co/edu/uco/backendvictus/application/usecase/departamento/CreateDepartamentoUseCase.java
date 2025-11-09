@@ -1,15 +1,15 @@
 package co.edu.uco.backendvictus.application.usecase.departamento;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import reactor.core.publisher.Mono;
 
 import co.edu.uco.backendvictus.application.dto.departamento.DepartamentoCreateRequest;
 import co.edu.uco.backendvictus.application.dto.departamento.DepartamentoResponse;
 import co.edu.uco.backendvictus.application.mapper.DepartamentoApplicationMapper;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
+import co.edu.uco.backendvictus.crosscutting.helpers.UuidGenerator;
 import co.edu.uco.backendvictus.domain.model.Departamento;
 import co.edu.uco.backendvictus.domain.model.Pais;
 import co.edu.uco.backendvictus.domain.port.DepartamentoRepository;
@@ -30,13 +30,11 @@ public class CreateDepartamentoUseCase implements UseCase<DepartamentoCreateRequ
     }
 
     @Override
-    @Transactional
-    public DepartamentoResponse execute(final DepartamentoCreateRequest request) {
-        final Pais pais = paisRepository.findById(request.paisId())
-                .orElseThrow(() -> new ApplicationException("Pais no encontrado"));
-
-        final Departamento departamento = mapper.toDomain(UUID.randomUUID(), request, pais);
-        final Departamento persisted = departamentoRepository.save(departamento);
-        return mapper.toResponse(persisted);
+    public Mono<DepartamentoResponse> execute(final DepartamentoCreateRequest request) {
+        return paisRepository.findById(request.paisId())
+                .switchIfEmpty(Mono.error(new ApplicationException("Pais no encontrado")))
+                .map(pais -> mapper.toDomain(UuidGenerator.generate(), request, pais))
+                .flatMap(departamentoRepository::save)
+                .map(mapper::toResponse);
     }
 }

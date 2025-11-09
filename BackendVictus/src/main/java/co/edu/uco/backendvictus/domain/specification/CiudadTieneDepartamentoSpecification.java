@@ -16,6 +16,6 @@ public final class CiudadTieneDepartamentoSpecification implements Specification
     @Override
     public boolean isSatisfiedBy(final Ciudad candidate) {
         final Departamento departamento = candidate != null ? candidate.getDepartamento() : null;
-        return departamento != null;
+        return departamento != null && departamento.getPais() != null;
     }
 }

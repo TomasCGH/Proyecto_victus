@@ -1,18 +1,19 @@
 package co.edu.uco.backendvictus.domain.port;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
 
 public interface ConjuntoResidencialRepository {
 
-    ConjuntoResidencial save(ConjuntoResidencial conjuntoResidencial);
+    Mono<ConjuntoResidencial> save(ConjuntoResidencial conjuntoResidencial);
 
-    Optional<ConjuntoResidencial> findById(UUID id);
+    Mono<ConjuntoResidencial> findById(UUID id);
 
-    List<ConjuntoResidencial> findAll();
+    Flux<ConjuntoResidencial> findAll();
 
-    void deleteById(UUID id);
+    Mono<Void> deleteById(UUID id);
 }

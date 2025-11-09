@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import co.edu.uco.backendvictus.crosscutting.helpers.ValidationUtils;
 import co.edu.uco.backendvictus.domain.specification.ConjuntoAdministradorActivoSpecification;
+import co.edu.uco.backendvictus.domain.specification.ConjuntoTieneCiudadSpecification;
 import co.edu.uco.backendvictus.domain.specification.SpecificationValidator;
 
 /**
@@ -29,6 +30,8 @@ public final class ConjuntoResidencial {
 
         SpecificationValidator.check(ConjuntoAdministradorActivoSpecification.INSTANCE, this,
                 "El conjunto residencial requiere un administrador activo");
+        SpecificationValidator.check(ConjuntoTieneCiudadSpecification.INSTANCE, this,
+                "El conjunto residencial debe pertenecer a una ciudad valida");
     }
 
     public static ConjuntoResidencial create(final UUID id, final String nombre, final String direccion,

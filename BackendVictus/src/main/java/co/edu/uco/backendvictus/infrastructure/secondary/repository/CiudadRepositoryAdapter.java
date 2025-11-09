@@ -1,53 +1,53 @@
 package co.edu.uco.backendvictus.infrastructure.secondary.repository;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
 import co.edu.uco.backendvictus.domain.model.Ciudad;
 import co.edu.uco.backendvictus.domain.port.CiudadRepository;
-import co.edu.uco.backendvictus.infrastructure.secondary.entity.CiudadJpaEntity;
-import co.edu.uco.backendvictus.infrastructure.secondary.entity.DepartamentoJpaEntity;
+import co.edu.uco.backendvictus.domain.port.DepartamentoRepository;
+import co.edu.uco.backendvictus.infrastructure.secondary.entity.CiudadEntity;
 import co.edu.uco.backendvictus.infrastructure.secondary.mapper.CiudadEntityMapper;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public class CiudadRepositoryAdapter implements CiudadRepository {
 
-    private final CiudadJpaRepository ciudadJpaRepository;
-    private final DepartamentoJpaRepository departamentoJpaRepository;
+    private final CiudadR2dbcRepository repository;
     private final CiudadEntityMapper mapper;
+    private final DepartamentoRepository departamentoRepository;
 
-    public CiudadRepositoryAdapter(final CiudadJpaRepository ciudadJpaRepository,
-            final DepartamentoJpaRepository departamentoJpaRepository, final CiudadEntityMapper mapper) {
-        this.ciudadJpaRepository = ciudadJpaRepository;
-        this.departamentoJpaRepository = departamentoJpaRepository;
+    public CiudadRepositoryAdapter(final CiudadR2dbcRepository repository, final CiudadEntityMapper mapper,
+            final DepartamentoRepository departamentoRepository) {
+        this.repository = repository;
         this.mapper = mapper;
+        this.departamentoRepository = departamentoRepository;
     }
 
     @Override
-    public Ciudad save(final Ciudad ciudad) {
-        final DepartamentoJpaEntity departamento =
-                departamentoJpaRepository.getReferenceById(ciudad.getDepartamento().getId());
-        final CiudadJpaEntity entity = mapper.toEntity(ciudad);
-        entity.setDepartamento(departamento);
-        final CiudadJpaEntity saved = ciudadJpaRepository.save(entity);
-        return mapper.toDomain(saved);
+    public Mono<Ciudad> save(final Ciudad ciudad) {
+        return repository.save(mapper.toEntity(ciudad)).flatMap(this::toDomain);
     }
 
     @Override
-    public Optional<Ciudad> findById(final UUID id) {
-        return ciudadJpaRepository.findById(id).map(mapper::toDomain);
+    public Mono<Ciudad> findById(final UUID id) {
+        return repository.findById(id).flatMap(this::toDomain);
     }
 
     @Override
-    public List<Ciudad> findAll() {
-        return ciudadJpaRepository.findAll().stream().map(mapper::toDomain).toList();
+    public Flux<Ciudad> findAll() {
+        return repository.findAll().flatMap(this::toDomain);
     }
 
     @Override
-    public void deleteById(final UUID id) {
-        ciudadJpaRepository.deleteById(id);
+    public Mono<Void> deleteById(final UUID id) {
+        return repository.deleteById(id);
+    }
+
+    private Mono<Ciudad> toDomain(final CiudadEntity entity) {
+        return departamentoRepository.findById(entity.getDepartamentoId())
+                .map(departamento -> mapper.toDomain(entity, departamento));
     }
 }

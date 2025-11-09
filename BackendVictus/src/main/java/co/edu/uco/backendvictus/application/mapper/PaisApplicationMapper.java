@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.application.mapper;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
@@ -22,6 +21,4 @@ public abstract class PaisApplicationMapper {
     }
 
     public abstract PaisResponse toResponse(Pais pais);
-
-    public abstract List<PaisResponse> toResponseList(List<Pais> paises);
 }

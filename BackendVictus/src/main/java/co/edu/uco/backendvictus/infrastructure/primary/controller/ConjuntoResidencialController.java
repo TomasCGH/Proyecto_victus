@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.infrastructure.primary.controller;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -22,9 +21,11 @@ import co.edu.uco.backendvictus.application.usecase.conjunto.DeleteConjuntoUseCa
 import co.edu.uco.backendvictus.application.usecase.conjunto.ListConjuntoUseCase;
 import co.edu.uco.backendvictus.application.usecase.conjunto.UpdateConjuntoUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/conjuntos")
+@RequestMapping("/uco-challenge/api/v1/conjuntos")
 public class ConjuntoResidencialController {
 
     private final CreateConjuntoUseCase createConjuntoUseCase;
@@ -42,31 +43,38 @@ public class ConjuntoResidencialController {
     }
 
     @PostMapping
-    public ResponseEntity<ConjuntoResponse> crear(@RequestBody final ConjuntoCreateRequest request) {
+    public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> crear(
+            @RequestBody final ConjuntoCreateRequest request) {
         final ConjuntoCreateRequest sanitized = new ConjuntoCreateRequest(request.ciudadId(),
                 request.administradorId(), DataSanitizer.sanitizeText(request.nombre()),
                 DataSanitizer.sanitizeText(request.direccion()), request.activo());
-        final ConjuntoResponse response = createConjuntoUseCase.execute(sanitized);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return createConjuntoUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
     }
 
     @GetMapping
-    public List<ConjuntoResponse> listar() {
-        return listConjuntoUseCase.execute();
+    public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<ConjuntoResponse>>>> listar() {
+        return listConjuntoUseCase.execute().collectList()
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public ConjuntoResponse actualizar(@PathVariable("id") final UUID id,
+    public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> actualizar(@PathVariable("id") final UUID id,
             @RequestBody final ConjuntoUpdateRequest request) {
         final ConjuntoUpdateRequest sanitized = new ConjuntoUpdateRequest(id, request.ciudadId(),
                 request.administradorId(), DataSanitizer.sanitizeText(request.nombre()),
                 DataSanitizer.sanitizeText(request.direccion()), request.activo());
-        return updateConjuntoUseCase.execute(sanitized);
+        return updateConjuntoUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable("id") final UUID id) {
-        deleteConjuntoUseCase.execute(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
+        return deleteConjuntoUseCase.execute(id)
+                .thenReturn(ApiSuccessResponse.of(null))
+                .map(ResponseEntity::ok);
     }
 }

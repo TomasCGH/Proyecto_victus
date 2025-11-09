@@ -3,7 +3,8 @@ package co.edu.uco.backendvictus.application.usecase.pais;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import reactor.core.publisher.Mono;
 
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.domain.port.PaisRepository;
@@ -17,9 +18,9 @@ public class DeletePaisUseCase {
         this.repository = repository;
     }
 
-    @Transactional
-    public void execute(final UUID id) {
-        repository.findById(id).orElseThrow(() -> new ApplicationException("Pais no encontrado"));
-        repository.deleteById(id);
+    public Mono<Void> execute(final UUID id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new ApplicationException("Pais no encontrado")))
+                .then(repository.deleteById(id));
     }
 }

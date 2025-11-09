@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.infrastructure.primary.controller;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -22,9 +21,11 @@ import co.edu.uco.backendvictus.application.usecase.administrador.DeleteAdminist
 import co.edu.uco.backendvictus.application.usecase.administrador.ListAdministradorUseCase;
 import co.edu.uco.backendvictus.application.usecase.administrador.UpdateAdministradorUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/administradores")
+@RequestMapping("/uco-challenge/api/v1/administradores")
 public class AdministradorController {
 
     private final CreateAdministradorUseCase createAdministradorUseCase;
@@ -43,36 +44,43 @@ public class AdministradorController {
     }
 
     @PostMapping
-    public ResponseEntity<AdministradorResponse> crear(@RequestBody final AdministradorCreateRequest request) {
+    public Mono<ResponseEntity<ApiSuccessResponse<AdministradorResponse>>> crear(
+            @RequestBody final AdministradorCreateRequest request) {
         final AdministradorCreateRequest sanitized = new AdministradorCreateRequest(
                 DataSanitizer.sanitizeText(request.primerNombre()),
                 DataSanitizer.sanitizeText(request.segundoNombres()),
                 DataSanitizer.sanitizeText(request.primerApellido()),
                 DataSanitizer.sanitizeText(request.segundoApellido()), DataSanitizer.sanitizeText(request.email()),
                 DataSanitizer.sanitizeText(request.telefono()), request.activo());
-        final AdministradorResponse response = createAdministradorUseCase.execute(sanitized);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return createAdministradorUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
     }
 
     @GetMapping
-    public List<AdministradorResponse> listar() {
-        return listAdministradorUseCase.execute();
+    public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<AdministradorResponse>>>> listar() {
+        return listAdministradorUseCase.execute().collectList()
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public AdministradorResponse actualizar(@PathVariable("id") final UUID id,
-            @RequestBody final AdministradorUpdateRequest request) {
+    public Mono<ResponseEntity<ApiSuccessResponse<AdministradorResponse>>> actualizar(
+            @PathVariable("id") final UUID id, @RequestBody final AdministradorUpdateRequest request) {
         final AdministradorUpdateRequest sanitized = new AdministradorUpdateRequest(id,
                 DataSanitizer.sanitizeText(request.primerNombre()), DataSanitizer.sanitizeText(request.segundoNombres()),
                 DataSanitizer.sanitizeText(request.primerApellido()),
                 DataSanitizer.sanitizeText(request.segundoApellido()), DataSanitizer.sanitizeText(request.email()),
                 DataSanitizer.sanitizeText(request.telefono()), request.activo());
-        return updateAdministradorUseCase.execute(sanitized);
+        return updateAdministradorUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable("id") final UUID id) {
-        deleteAdministradorUseCase.execute(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
+        return deleteAdministradorUseCase.execute(id)
+                .thenReturn(ApiSuccessResponse.of(null))
+                .map(ResponseEntity::ok);
     }
 }
