@@ -1,15 +1,15 @@
 package co.edu.uco.backendvictus.application.usecase.conjunto;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import reactor.core.publisher.Mono;
 
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoCreateRequest;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
+import co.edu.uco.backendvictus.crosscutting.helpers.UuidGenerator;
 import co.edu.uco.backendvictus.domain.model.Administrador;
 import co.edu.uco.backendvictus.domain.model.Ciudad;
 import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
@@ -35,16 +35,15 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
     }
 
     @Override
-    @Transactional
-    public ConjuntoResponse execute(final ConjuntoCreateRequest request) {
-        final Ciudad ciudad = ciudadRepository.findById(request.ciudadId())
-                .orElseThrow(() -> new ApplicationException("Ciudad no encontrada"));
-        final Administrador administrador = administradorRepository.findById(request.administradorId())
-                .orElseThrow(() -> new ApplicationException("Administrador no encontrado"));
+    public Mono<ConjuntoResponse> execute(final ConjuntoCreateRequest request) {
+        final Mono<Ciudad> ciudadMono = ciudadRepository.findById(request.ciudadId())
+                .switchIfEmpty(Mono.error(new ApplicationException("Ciudad no encontrada")));
+        final Mono<Administrador> administradorMono = administradorRepository.findById(request.administradorId())
+                .switchIfEmpty(Mono.error(new ApplicationException("Administrador no encontrado")));
 
-        final ConjuntoResidencial conjuntoResidencial = mapper.toDomain(UUID.randomUUID(), request, ciudad,
-                administrador);
-        final ConjuntoResidencial persisted = conjuntoRepository.save(conjuntoResidencial);
-        return mapper.toResponse(persisted);
+        return Mono.zip(ciudadMono, administradorMono)
+                .map(tuple -> mapper.toDomain(UuidGenerator.generate(), request, tuple.getT1(), tuple.getT2()))
+                .flatMap(conjuntoRepository::save)
+                .map(mapper::toResponse);
     }
 }

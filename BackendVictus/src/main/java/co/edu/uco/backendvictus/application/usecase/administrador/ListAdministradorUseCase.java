@@ -1,8 +1,8 @@
 package co.edu.uco.backendvictus.application.usecase.administrador;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
+
+import reactor.core.publisher.Flux;
 
 import co.edu.uco.backendvictus.application.dto.administrador.AdministradorResponse;
 import co.edu.uco.backendvictus.application.mapper.AdministradorApplicationMapper;
@@ -20,7 +20,7 @@ public class ListAdministradorUseCase {
         this.mapper = mapper;
     }
 
-    public List<AdministradorResponse> execute() {
-        return mapper.toResponseList(administradorRepository.findAll());
+    public Flux<AdministradorResponse> execute() {
+        return administradorRepository.findAll().map(mapper::toResponse);
     }
 }

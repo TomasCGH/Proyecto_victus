@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.infrastructure.primary.controller;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -22,9 +21,11 @@ import co.edu.uco.backendvictus.application.usecase.ciudad.DeleteCiudadUseCase;
 import co.edu.uco.backendvictus.application.usecase.ciudad.ListCiudadUseCase;
 import co.edu.uco.backendvictus.application.usecase.ciudad.UpdateCiudadUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/ciudades")
+@RequestMapping("/uco-challenge/api/v1/ciudades")
 public class CiudadController {
 
     private final CreateCiudadUseCase createCiudadUseCase;
@@ -41,28 +42,36 @@ public class CiudadController {
     }
 
     @PostMapping
-    public ResponseEntity<CiudadResponse> crear(@RequestBody final CiudadCreateRequest request) {
+    public Mono<ResponseEntity<ApiSuccessResponse<CiudadResponse>>> crear(
+            @RequestBody final CiudadCreateRequest request) {
         final CiudadCreateRequest sanitized = new CiudadCreateRequest(request.departamentoId(),
                 DataSanitizer.sanitizeText(request.nombre()), request.activo());
-        final CiudadResponse response = createCiudadUseCase.execute(sanitized);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return createCiudadUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
     }
 
     @GetMapping
-    public List<CiudadResponse> listar() {
-        return listCiudadUseCase.execute();
+    public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<CiudadResponse>>>> listar() {
+        return listCiudadUseCase.execute().collectList()
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public CiudadResponse actualizar(@PathVariable("id") final UUID id, @RequestBody final CiudadUpdateRequest request) {
+    public Mono<ResponseEntity<ApiSuccessResponse<CiudadResponse>>> actualizar(@PathVariable("id") final UUID id,
+            @RequestBody final CiudadUpdateRequest request) {
         final CiudadUpdateRequest sanitized = new CiudadUpdateRequest(id, request.departamentoId(),
                 DataSanitizer.sanitizeText(request.nombre()), request.activo());
-        return updateCiudadUseCase.execute(sanitized);
+        return updateCiudadUseCase.execute(sanitized)
+                .map(ApiSuccessResponse::of)
+                .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable("id") final UUID id) {
-        deleteCiudadUseCase.execute(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
+        return deleteCiudadUseCase.execute(id)
+                .thenReturn(ApiSuccessResponse.of(null))
+                .map(ResponseEntity::ok);
     }
 }

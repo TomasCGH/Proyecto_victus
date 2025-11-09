@@ -1,30 +1,23 @@
 package co.edu.uco.backendvictus.infrastructure.secondary.mapper;
 
-import org.mapstruct.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import co.edu.uco.backendvictus.domain.model.Departamento;
 import co.edu.uco.backendvictus.domain.model.Pais;
-import co.edu.uco.backendvictus.infrastructure.secondary.entity.DepartamentoJpaEntity;
-import co.edu.uco.backendvictus.infrastructure.secondary.entity.PaisJpaEntity;
+import co.edu.uco.backendvictus.infrastructure.secondary.entity.DepartamentoEntity;
 
-@Mapper(componentModel = "spring", uses = PaisEntityMapper.class)
-public abstract class DepartamentoEntityMapper {
+@Component
+public class DepartamentoEntityMapper {
 
-    @Autowired
-    private PaisEntityMapper paisEntityMapper;
-
-    public abstract DepartamentoJpaEntity toEntity(Departamento departamento);
-
-    protected PaisJpaEntity map(final Pais pais) {
-        return paisEntityMapper.toEntity(pais);
+    public DepartamentoEntity toEntity(final Departamento departamento) {
+        return new DepartamentoEntity(departamento.getId(), departamento.getPais().getId(), departamento.getNombre(),
+                departamento.isActivo());
     }
 
-    public Departamento toDomain(final DepartamentoJpaEntity entity) {
+    public Departamento toDomain(final DepartamentoEntity entity, final Pais pais) {
         if (entity == null) {
             return null;
         }
-        final Pais pais = paisEntityMapper.toDomain(entity.getPais());
         return Departamento.create(entity.getId(), entity.getNombre(), pais, entity.isActivo());
     }
 }

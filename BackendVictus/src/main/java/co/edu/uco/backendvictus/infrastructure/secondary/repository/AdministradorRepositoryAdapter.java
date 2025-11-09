@@ -1,47 +1,44 @@
 package co.edu.uco.backendvictus.infrastructure.secondary.repository;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
 import co.edu.uco.backendvictus.domain.model.Administrador;
 import co.edu.uco.backendvictus.domain.port.AdministradorRepository;
-import co.edu.uco.backendvictus.infrastructure.secondary.entity.AdministradorJpaEntity;
 import co.edu.uco.backendvictus.infrastructure.secondary.mapper.AdministradorEntityMapper;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public class AdministradorRepositoryAdapter implements AdministradorRepository {
 
-    private final AdministradorJpaRepository administradorJpaRepository;
+    private final AdministradorR2dbcRepository repository;
     private final AdministradorEntityMapper mapper;
 
-    public AdministradorRepositoryAdapter(final AdministradorJpaRepository administradorJpaRepository,
+    public AdministradorRepositoryAdapter(final AdministradorR2dbcRepository repository,
             final AdministradorEntityMapper mapper) {
-        this.administradorJpaRepository = administradorJpaRepository;
+        this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
-    public Administrador save(final Administrador administrador) {
-        final AdministradorJpaEntity entity = mapper.toEntity(administrador);
-        final AdministradorJpaEntity saved = administradorJpaRepository.save(entity);
-        return mapper.toDomain(saved);
+    public Mono<Administrador> save(final Administrador administrador) {
+        return repository.save(mapper.toEntity(administrador)).map(mapper::toDomain);
     }
 
     @Override
-    public Optional<Administrador> findById(final UUID id) {
-        return administradorJpaRepository.findById(id).map(mapper::toDomain);
+    public Mono<Administrador> findById(final UUID id) {
+        return repository.findById(id).map(mapper::toDomain);
     }
 
     @Override
-    public List<Administrador> findAll() {
-        return administradorJpaRepository.findAll().stream().map(mapper::toDomain).toList();
+    public Flux<Administrador> findAll() {
+        return repository.findAll().map(mapper::toDomain);
     }
 
     @Override
-    public void deleteById(final UUID id) {
-        administradorJpaRepository.deleteById(id);
+    public Mono<Void> deleteById(final UUID id) {
+        return repository.deleteById(id);
     }
 }

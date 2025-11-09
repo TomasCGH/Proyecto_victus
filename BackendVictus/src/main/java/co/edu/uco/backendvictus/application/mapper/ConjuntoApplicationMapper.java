@@ -1,6 +1,5 @@
 package co.edu.uco.backendvictus.application.mapper;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
@@ -31,6 +30,4 @@ public abstract class ConjuntoApplicationMapper {
     @Mapping(target = "ciudadId", source = "ciudad.id")
     @Mapping(target = "administradorId", source = "administrador.id")
     public abstract ConjuntoResponse toResponse(ConjuntoResidencial conjuntoResidencial);
-
-    public abstract List<ConjuntoResponse> toResponseList(List<ConjuntoResidencial> conjuntos);
 }

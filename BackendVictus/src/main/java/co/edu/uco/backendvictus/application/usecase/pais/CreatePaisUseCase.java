@@ -1,9 +1,8 @@
 package co.edu.uco.backendvictus.application.usecase.pais;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import reactor.core.publisher.Mono;
 
 import co.edu.uco.backendvictus.application.dto.pais.PaisCreateRequest;
 import co.edu.uco.backendvictus.application.dto.pais.PaisResponse;
@@ -11,6 +10,7 @@ import co.edu.uco.backendvictus.application.mapper.PaisApplicationMapper;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.domain.model.Pais;
 import co.edu.uco.backendvictus.domain.port.PaisRepository;
+import co.edu.uco.backendvictus.crosscutting.helpers.UuidGenerator;
 
 @Service
 public class CreatePaisUseCase implements UseCase<PaisCreateRequest, PaisResponse> {
@@ -24,10 +24,9 @@ public class CreatePaisUseCase implements UseCase<PaisCreateRequest, PaisRespons
     }
 
     @Override
-    @Transactional
-    public PaisResponse execute(final PaisCreateRequest request) {
-        final Pais pais = mapper.toDomain(UUID.randomUUID(), request);
-        final Pais persisted = repository.save(pais);
-        return mapper.toResponse(persisted);
+    public Mono<PaisResponse> execute(final PaisCreateRequest request) {
+        return Mono.fromSupplier(() -> mapper.toDomain(UuidGenerator.generate(), request))
+                .flatMap(repository::save)
+                .map(mapper::toResponse);
     }
 }

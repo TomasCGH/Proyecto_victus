@@ -1,8 +1,8 @@
 package co.edu.uco.backendvictus.application.usecase.conjunto;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
+
+import reactor.core.publisher.Flux;
 
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
@@ -20,7 +20,7 @@ public class ListConjuntoUseCase {
         this.mapper = mapper;
     }
 
-    public List<ConjuntoResponse> execute() {
-        return mapper.toResponseList(conjuntoRepository.findAll());
+    public Flux<ConjuntoResponse> execute() {
+        return conjuntoRepository.findAll().map(mapper::toResponse);
     }
 }

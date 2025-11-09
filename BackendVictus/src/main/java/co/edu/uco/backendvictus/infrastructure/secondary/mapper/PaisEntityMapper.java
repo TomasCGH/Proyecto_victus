@@ -1,16 +1,18 @@
 package co.edu.uco.backendvictus.infrastructure.secondary.mapper;
 
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
 import co.edu.uco.backendvictus.domain.model.Pais;
-import co.edu.uco.backendvictus.infrastructure.secondary.entity.PaisJpaEntity;
+import co.edu.uco.backendvictus.infrastructure.secondary.entity.PaisEntity;
 
-@Mapper(componentModel = "spring")
-public abstract class PaisEntityMapper {
+@Component
+public class PaisEntityMapper {
 
-    public abstract PaisJpaEntity toEntity(Pais pais);
+    public PaisEntity toEntity(final Pais pais) {
+        return new PaisEntity(pais.getId(), pais.getNombre(), pais.isActivo());
+    }
 
-    public Pais toDomain(final PaisJpaEntity entity) {
+    public Pais toDomain(final PaisEntity entity) {
         if (entity == null) {
             return null;
         }
