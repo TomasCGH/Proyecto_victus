@@ -22,6 +22,7 @@ import co.edu.uco.backendvictus.application.usecase.departamento.ListDepartament
 import co.edu.uco.backendvictus.application.usecase.departamento.UpdateDepartamentoUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelper; // 👈
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -34,9 +35,9 @@ public class DepartamentoController {
     private final DeleteDepartamentoUseCase deleteDepartamentoUseCase;
 
     public DepartamentoController(final CreateDepartamentoUseCase createDepartamentoUseCase,
-            final ListDepartamentoUseCase listDepartamentoUseCase,
-            final UpdateDepartamentoUseCase updateDepartamentoUseCase,
-            final DeleteDepartamentoUseCase deleteDepartamentoUseCase) {
+                                  final ListDepartamentoUseCase listDepartamentoUseCase,
+                                  final UpdateDepartamentoUseCase updateDepartamentoUseCase,
+                                  final DeleteDepartamentoUseCase deleteDepartamentoUseCase) {
         this.createDepartamentoUseCase = createDepartamentoUseCase;
         this.listDepartamentoUseCase = listDepartamentoUseCase;
         this.updateDepartamentoUseCase = updateDepartamentoUseCase;
@@ -73,7 +74,7 @@ public class DepartamentoController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
         return deleteDepartamentoUseCase.execute(id)
-                .thenReturn(ApiSuccessResponse.of(null))
+                .thenReturn(ApiResponseHelper.emptySuccess()) // ✅
                 .map(ResponseEntity::ok);
     }
 }

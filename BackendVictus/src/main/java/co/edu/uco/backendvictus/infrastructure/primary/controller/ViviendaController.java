@@ -28,6 +28,7 @@ import co.edu.uco.backendvictus.application.usecase.vivienda.ListViviendaUseCase
 import co.edu.uco.backendvictus.application.usecase.vivienda.UpdateViviendaUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelper; // ✅ import helper
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -41,9 +42,10 @@ public class ViviendaController {
     private final DeleteViviendaUseCase deleteViviendaUseCase;
 
     public ViviendaController(final CreateViviendaUseCase createViviendaUseCase,
-            final ListViviendaUseCase listViviendaUseCase, final UpdateViviendaUseCase updateViviendaUseCase,
-            final ChangeViviendaEstadoUseCase changeViviendaEstadoUseCase,
-            final DeleteViviendaUseCase deleteViviendaUseCase) {
+                              final ListViviendaUseCase listViviendaUseCase,
+                              final UpdateViviendaUseCase updateViviendaUseCase,
+                              final ChangeViviendaEstadoUseCase changeViviendaEstadoUseCase,
+                              final DeleteViviendaUseCase deleteViviendaUseCase) {
         this.createViviendaUseCase = createViviendaUseCase;
         this.listViviendaUseCase = listViviendaUseCase;
         this.updateViviendaUseCase = updateViviendaUseCase;
@@ -52,9 +54,14 @@ public class ViviendaController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<ApiSuccessResponse<ViviendaResponse>>> crear(@RequestBody final ViviendaCreateRequest request) {
-        final ViviendaCreateRequest sanitized = new ViviendaCreateRequest(request.conjuntoId(),
-                DataSanitizer.sanitizeText(request.numero()), cleanText(request.tipo()), cleanText(request.estado()));
+    public Mono<ResponseEntity<ApiSuccessResponse<ViviendaResponse>>> crear(
+            @RequestBody final ViviendaCreateRequest request) {
+        final ViviendaCreateRequest sanitized = new ViviendaCreateRequest(
+                request.conjuntoId(),
+                DataSanitizer.sanitizeText(request.numero()),
+                cleanText(request.tipo()),
+                cleanText(request.estado()));
+
         return createViviendaUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
@@ -68,18 +75,32 @@ public class ViviendaController {
             @RequestParam(name = "numero", required = false) final String numero,
             @RequestParam(name = "page", required = false) final Integer page,
             @RequestParam(name = "size", required = false) final Integer size) {
-        final ViviendaFilterRequest filter = new ViviendaFilterRequest(conjuntoId, cleanText(estado), cleanText(tipo),
-                cleanText(numero), page, size);
+
+        final ViviendaFilterRequest filter = new ViviendaFilterRequest(
+                conjuntoId,
+                cleanText(estado),
+                cleanText(tipo),
+                cleanText(numero),
+                page,
+                size);
+
         return listViviendaUseCase.execute(filter)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<ApiSuccessResponse<ViviendaResponse>>> actualizar(@PathVariable("id") final UUID id,
+    public Mono<ResponseEntity<ApiSuccessResponse<ViviendaResponse>>> actualizar(
+            @PathVariable("id") final UUID id,
             @RequestBody final ViviendaUpdateRequest request) {
-        final ViviendaUpdateRequest sanitized = new ViviendaUpdateRequest(id, request.conjuntoId(),
-                DataSanitizer.sanitizeText(request.numero()), cleanText(request.tipo()), cleanText(request.estado()));
+
+        final ViviendaUpdateRequest sanitized = new ViviendaUpdateRequest(
+                id,
+                request.conjuntoId(),
+                DataSanitizer.sanitizeText(request.numero()),
+                cleanText(request.tipo()),
+                cleanText(request.estado()));
+
         return updateViviendaUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
@@ -87,8 +108,12 @@ public class ViviendaController {
 
     @PatchMapping("/{id}/estado")
     public Mono<ResponseEntity<ApiSuccessResponse<ViviendaResponse>>> cambiarEstado(
-            @PathVariable("id") final UUID id, @RequestBody final ViviendaChangeEstadoRequest request) {
-        final ViviendaChangeEstadoRequest sanitized = new ViviendaChangeEstadoRequest(id, cleanText(request.estado()));
+            @PathVariable("id") final UUID id,
+            @RequestBody final ViviendaChangeEstadoRequest request) {
+
+        final ViviendaChangeEstadoRequest sanitized =
+                new ViviendaChangeEstadoRequest(id, cleanText(request.estado()));
+
         return changeViviendaEstadoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
@@ -97,7 +122,7 @@ public class ViviendaController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
         return deleteViviendaUseCase.execute(id)
-                .thenReturn(ApiSuccessResponse.of(null))
+                .thenReturn(ApiResponseHelper.emptySuccess()) // ✅ sin null
                 .map(ResponseEntity::ok);
     }
 

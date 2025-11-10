@@ -22,6 +22,7 @@ import co.edu.uco.backendvictus.application.usecase.conjunto.ListConjuntoUseCase
 import co.edu.uco.backendvictus.application.usecase.conjunto.UpdateConjuntoUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelper; // ✅ import helper
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -34,8 +35,9 @@ public class ConjuntoResidencialController {
     private final DeleteConjuntoUseCase deleteConjuntoUseCase;
 
     public ConjuntoResidencialController(final CreateConjuntoUseCase createConjuntoUseCase,
-            final ListConjuntoUseCase listConjuntoUseCase, final UpdateConjuntoUseCase updateConjuntoUseCase,
-            final DeleteConjuntoUseCase deleteConjuntoUseCase) {
+                                         final ListConjuntoUseCase listConjuntoUseCase,
+                                         final UpdateConjuntoUseCase updateConjuntoUseCase,
+                                         final DeleteConjuntoUseCase deleteConjuntoUseCase) {
         this.createConjuntoUseCase = createConjuntoUseCase;
         this.listConjuntoUseCase = listConjuntoUseCase;
         this.updateConjuntoUseCase = updateConjuntoUseCase;
@@ -45,9 +47,14 @@ public class ConjuntoResidencialController {
     @PostMapping
     public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> crear(
             @RequestBody final ConjuntoCreateRequest request) {
-        final ConjuntoCreateRequest sanitized = new ConjuntoCreateRequest(request.ciudadId(),
-                request.administradorId(), DataSanitizer.sanitizeText(request.nombre()),
-                DataSanitizer.sanitizeText(request.direccion()), request.activo());
+
+        final ConjuntoCreateRequest sanitized = new ConjuntoCreateRequest(
+                request.ciudadId(),
+                request.administradorId(),
+                DataSanitizer.sanitizeText(request.nombre()),
+                DataSanitizer.sanitizeText(request.direccion()),
+                request.activo());
+
         return createConjuntoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
@@ -55,17 +62,25 @@ public class ConjuntoResidencialController {
 
     @GetMapping
     public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<ConjuntoResponse>>>> listar() {
-        return listConjuntoUseCase.execute().collectList()
+        return listConjuntoUseCase.execute()
+                .collectList()
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> actualizar(@PathVariable("id") final UUID id,
+    public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> actualizar(
+            @PathVariable("id") final UUID id,
             @RequestBody final ConjuntoUpdateRequest request) {
-        final ConjuntoUpdateRequest sanitized = new ConjuntoUpdateRequest(id, request.ciudadId(),
-                request.administradorId(), DataSanitizer.sanitizeText(request.nombre()),
-                DataSanitizer.sanitizeText(request.direccion()), request.activo());
+
+        final ConjuntoUpdateRequest sanitized = new ConjuntoUpdateRequest(
+                id,
+                request.ciudadId(),
+                request.administradorId(),
+                DataSanitizer.sanitizeText(request.nombre()),
+                DataSanitizer.sanitizeText(request.direccion()),
+                request.activo());
+
         return updateConjuntoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
@@ -74,7 +89,7 @@ public class ConjuntoResidencialController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
         return deleteConjuntoUseCase.execute(id)
-                .thenReturn(ApiSuccessResponse.of(null))
+                .thenReturn(ApiResponseHelper.emptySuccess()) // ✅ sin null ni warnings de tipo
                 .map(ResponseEntity::ok);
     }
 }

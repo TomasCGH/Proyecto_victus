@@ -22,6 +22,7 @@ import co.edu.uco.backendvictus.application.usecase.ciudad.ListCiudadUseCase;
 import co.edu.uco.backendvictus.application.usecase.ciudad.UpdateCiudadUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelper; // 👈 helper
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -33,8 +34,10 @@ public class CiudadController {
     private final UpdateCiudadUseCase updateCiudadUseCase;
     private final DeleteCiudadUseCase deleteCiudadUseCase;
 
-    public CiudadController(final CreateCiudadUseCase createCiudadUseCase, final ListCiudadUseCase listCiudadUseCase,
-            final UpdateCiudadUseCase updateCiudadUseCase, final DeleteCiudadUseCase deleteCiudadUseCase) {
+    public CiudadController(final CreateCiudadUseCase createCiudadUseCase,
+                            final ListCiudadUseCase listCiudadUseCase,
+                            final UpdateCiudadUseCase updateCiudadUseCase,
+                            final DeleteCiudadUseCase deleteCiudadUseCase) {
         this.createCiudadUseCase = createCiudadUseCase;
         this.listCiudadUseCase = listCiudadUseCase;
         this.updateCiudadUseCase = updateCiudadUseCase;
@@ -44,8 +47,11 @@ public class CiudadController {
     @PostMapping
     public Mono<ResponseEntity<ApiSuccessResponse<CiudadResponse>>> crear(
             @RequestBody final CiudadCreateRequest request) {
-        final CiudadCreateRequest sanitized = new CiudadCreateRequest(request.departamentoId(),
-                DataSanitizer.sanitizeText(request.nombre()), request.activo());
+        final CiudadCreateRequest sanitized = new CiudadCreateRequest(
+                request.departamentoId(),
+                DataSanitizer.sanitizeText(request.nombre()),
+                request.activo());
+
         return createCiudadUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
@@ -53,16 +59,22 @@ public class CiudadController {
 
     @GetMapping
     public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<CiudadResponse>>>> listar() {
-        return listCiudadUseCase.execute().collectList()
+        return listCiudadUseCase.execute()
+                .collectList()
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<ApiSuccessResponse<CiudadResponse>>> actualizar(@PathVariable("id") final UUID id,
+    public Mono<ResponseEntity<ApiSuccessResponse<CiudadResponse>>> actualizar(
+            @PathVariable("id") final UUID id,
             @RequestBody final CiudadUpdateRequest request) {
-        final CiudadUpdateRequest sanitized = new CiudadUpdateRequest(id, request.departamentoId(),
-                DataSanitizer.sanitizeText(request.nombre()), request.activo());
+        final CiudadUpdateRequest sanitized = new CiudadUpdateRequest(
+                id,
+                request.departamentoId(),
+                DataSanitizer.sanitizeText(request.nombre()),
+                request.activo());
+
         return updateCiudadUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
@@ -71,7 +83,7 @@ public class CiudadController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
         return deleteCiudadUseCase.execute(id)
-                .thenReturn(ApiSuccessResponse.of(null))
+                .thenReturn(ApiResponseHelper.emptySuccess()) // ✅ sin null ni problemas de genéricos
                 .map(ResponseEntity::ok);
     }
 }

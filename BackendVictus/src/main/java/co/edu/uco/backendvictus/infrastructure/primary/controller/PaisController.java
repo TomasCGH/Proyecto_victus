@@ -22,6 +22,7 @@ import co.edu.uco.backendvictus.application.usecase.pais.ListPaisUseCase;
 import co.edu.uco.backendvictus.application.usecase.pais.UpdatePaisUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelper; // 👈
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -34,7 +35,7 @@ public class PaisController {
     private final DeletePaisUseCase deletePaisUseCase;
 
     public PaisController(final CreatePaisUseCase createPaisUseCase, final ListPaisUseCase listPaisUseCase,
-            final UpdatePaisUseCase updatePaisUseCase, final DeletePaisUseCase deletePaisUseCase) {
+                          final UpdatePaisUseCase updatePaisUseCase, final DeletePaisUseCase deletePaisUseCase) {
         this.createPaisUseCase = createPaisUseCase;
         this.listPaisUseCase = listPaisUseCase;
         this.updatePaisUseCase = updatePaisUseCase;
@@ -60,7 +61,7 @@ public class PaisController {
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<PaisResponse>>> actualizar(@PathVariable("id") final UUID id,
-            @RequestBody final PaisUpdateRequest request) {
+                                                                             @RequestBody final PaisUpdateRequest request) {
         final PaisUpdateRequest sanitized = new PaisUpdateRequest(id, DataSanitizer.sanitizeText(request.nombre()),
                 request.activo());
         return updatePaisUseCase.execute(sanitized)
@@ -71,7 +72,7 @@ public class PaisController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
         return deletePaisUseCase.execute(id)
-                .thenReturn(ApiSuccessResponse.of(null))
+                .thenReturn(ApiResponseHelper.emptySuccess()) // ✅
                 .map(ResponseEntity::ok);
     }
 }

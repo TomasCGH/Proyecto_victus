@@ -22,6 +22,7 @@ import co.edu.uco.backendvictus.application.usecase.administrador.ListAdministra
 import co.edu.uco.backendvictus.application.usecase.administrador.UpdateAdministradorUseCase;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelper; // 👈 import helper
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -34,9 +35,9 @@ public class AdministradorController {
     private final DeleteAdministradorUseCase deleteAdministradorUseCase;
 
     public AdministradorController(final CreateAdministradorUseCase createAdministradorUseCase,
-            final ListAdministradorUseCase listAdministradorUseCase,
-            final UpdateAdministradorUseCase updateAdministradorUseCase,
-            final DeleteAdministradorUseCase deleteAdministradorUseCase) {
+                                   final ListAdministradorUseCase listAdministradorUseCase,
+                                   final UpdateAdministradorUseCase updateAdministradorUseCase,
+                                   final DeleteAdministradorUseCase deleteAdministradorUseCase) {
         this.createAdministradorUseCase = createAdministradorUseCase;
         this.listAdministradorUseCase = listAdministradorUseCase;
         this.updateAdministradorUseCase = updateAdministradorUseCase;
@@ -80,7 +81,7 @@ public class AdministradorController {
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<Void>>> eliminar(@PathVariable("id") final UUID id) {
         return deleteAdministradorUseCase.execute(id)
-                .thenReturn(ApiSuccessResponse.of(null))
+                .thenReturn(ApiResponseHelper.emptySuccess()) // ✅ sin null ni problemas de genéricos
                 .map(ResponseEntity::ok);
     }
 }
