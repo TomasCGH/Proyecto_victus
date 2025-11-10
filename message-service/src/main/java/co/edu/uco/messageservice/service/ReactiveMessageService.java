@@ -9,8 +9,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Servicio de alto nivel que orquesta las operaciones sobre el catálogo
- * reactivo.
+ * Servicio de orquestación que ofrece operaciones reactivas sobre el catálogo de
+ * mensajes utilizados en el dominio de viviendas.
  */
 @Service
 public class ReactiveMessageService {
