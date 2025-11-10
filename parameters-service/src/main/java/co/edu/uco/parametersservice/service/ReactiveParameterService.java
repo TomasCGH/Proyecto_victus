@@ -9,7 +9,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Servicio reactivo que trabaja sobre el catálogo de parámetros en memoria.
+ * Servicio reactivo que encapsula las operaciones sobre el catálogo de
+ * parámetros de vivienda.
  */
 @Service
 public class ReactiveParameterService {

@@ -3,118 +3,98 @@ package co.edu.uco.messageservice.catalog;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Catálogo en memoria que expone mensajes de negocio relacionados con el ciclo
+ * de vida de las viviendas. Los mensajes son consumidos por otros microservicios
+ * para mantener consistencia textual en notificaciones y respuestas HTTP.
+ */
 public final class MessageCatalog {
 
-	private static final Map<String, Message> MESSAGES = new ConcurrentHashMap<>();
+    private static final Map<String, Message> MESSAGES = new ConcurrentHashMap<>();
 
-	static {
-		register("exception.general.unexpected",
-				"Ha ocurrido un error inesperado. Por favor, intente nuevamente más tarde.");
-		register("exception.general.technical", "Se produjo un error interno al procesar la solicitud.");
-		register("exception.general.user", "No fue posible procesar la solicitud con la información recibida.");
+    static {
+        register("exception.general.unexpected",
+                "Ha ocurrido un error inesperado al gestionar la vivienda. Intente nuevamente más tarde.");
+        register("exception.general.technical",
+                "Se produjo un error interno al procesar la operación de vivienda.");
+        register("exception.general.request",
+                "No fue posible procesar la solicitud de vivienda con la información recibida.");
 
-                register("register.user.success", "Usuario registrado exitosamente.");
-                register("list.users.success", "Usuarios obtenidos exitosamente.");
-                register("get.user.success", "Usuario obtenido exitosamente.");
-                register("search.users.success", "Usuarios filtrados exitosamente.");
-                register("delete.user.success", "Usuario eliminado exitosamente.");
-		register("register.user.validation.idType.required", "El tipo de identificación es obligatorio.");
-		register("register.user.validation.idType.notFound",
-				"El tipo de identificación indicado no existe en el sistema.");
-		register("register.user.validation.idNumber.required", "El número de identificación es obligatorio.");
-		register("register.user.validation.idNumber.invalidFormat",
-				"El número de identificación solo puede contener dígitos.");
-		register("register.user.validation.idNumber.length",
-				"El número de identificación debe tener entre 5 y 20 dígitos.");
-		register("register.user.validation.name.required", "El nombre suministrado es obligatorio.");
-		register("register.user.validation.name.invalidCharacters", "El nombre solo puede contener letras y espacios.");
-		register("register.user.validation.name.length", "El nombre debe tener entre 2 y 40 caracteres.");
-		register("register.user.validation.homeCity.required", "La ciudad de residencia es obligatoria.");
-		register("register.user.validation.homeCity.notFound",
-				"La ciudad de residencia indicada no existe en el sistema.");
-		register("register.user.validation.email.required", "El correo electrónico es obligatorio.");
-		register("register.user.validation.email.length",
-				"El correo electrónico debe tener entre 10 y 100 caracteres.");
-		register("register.user.validation.email.invalidFormat", "El formato del correo electrónico no es válido.");
-		register("register.user.validation.mobile.required", "El número de teléfono móvil es obligatorio.");
-		register("register.user.validation.mobile.invalidFormat",
-				"El número de teléfono móvil debe contener exactamente 10 dígitos.");
+        register("register.vivienda.success", "Vivienda registrada exitosamente.");
+        register("register.vivienda.validation.numero.required", "El número de la vivienda es obligatorio.");
+        register("register.vivienda.validation.numero.length", "El número de la vivienda debe tener máximo 10 caracteres.");
+        register("register.vivienda.validation.numero.invalidFormat",
+                "El número de la vivienda solo puede contener letras, números y guiones.");
+        register("register.vivienda.validation.tipo.required", "El tipo de vivienda es obligatorio.");
+        register("register.vivienda.validation.tipo.notFound", "El tipo de vivienda indicado no está configurado.");
+        register("register.vivienda.validation.estado.required", "El estado de la vivienda es obligatorio.");
+        register("register.vivienda.validation.estado.invalid",
+                "El estado de la vivienda no es válido para el registro.");
+        register("register.vivienda.validation.conjunto.required", "Debe asignarse un conjunto residencial válido.");
+        register("register.vivienda.validation.conjunto.nombre.length",
+                "El nombre del conjunto residencial no puede superar 80 caracteres.");
 
-		register("register.user.rule.id.duplicated",
-				"Se detectó un conflicto con el identificador del usuario; se generará uno nuevo.");
-		register("register.user.rule.idTypeNumber.duplicated.admin",
-				"Existe un usuario con el mismo tipo y número de identificación. Se notificará al administrador.");
-		register("register.user.rule.idTypeNumber.duplicated.executor",
-				"Ya existe un usuario registrado con ese tipo y número de identificación.");
-		register("register.user.rule.email.duplicated.owner",
-				"El correo electrónico suministrado ya está registrado; se notificará al propietario.");
-                register("register.user.rule.email.duplicated.executor",
-                                "Ya existe un usuario con el correo electrónico proporcionado.");
-                register("register.user.rule.mobile.duplicated.owner",
-                                "El número de teléfono suministrado ya está registrado; se notificará al propietario.");
-                register("register.user.rule.mobile.duplicated.executor",
-                                "Ya existe un usuario con el número de teléfono proporcionado.");
-		register("register.user.rule.email.confirmation.strategy",
-				"Se enviará la estrategia de confirmación del correo electrónico.");
-		register("register.user.rule.email.confirmation.pending",
-				"El correo electrónico debe ser confirmado para finalizar el registro.");
-		register("register.user.rule.mobile.confirmation.strategy",
-				"Se enviará la estrategia de confirmación del número móvil.");
-		register("register.user.rule.mobile.confirmation.pending",
-				"El número móvil debe ser confirmado para finalizar el registro.");
-		register("list.users.validation.page.negative", "La página solicitada no puede ser negativa.");
-		register("list.users.validation.size.invalid", "El tamaño de página debe estar entre 1 y 50 registros.");
-        register("domain.user.email.alreadyConfirmed.technical",
-                "El correo electrónico ya fue confirmado anteriormente.");
-		register("domain.user.email.alreadyConfirmed.user",
-		                "El correo electrónico del usuario ya está confirmado.");
-		register("domain.user.mobile.alreadyConfirmed.technical",
-		                "El número de teléfono móvil ya fue confirmado anteriormente.");
-		register("domain.user.mobile.alreadyConfirmed.user",
-		                "El número de teléfono móvil del usuario ya está confirmado.");
-		
-                register("list.users.validation.size.invalid", "El tamaño de página debe estar entre 1 y 50 registros.");
-                register("application.unexpectedError.user", "Se presentó un error inesperado. Intenta nuevamente.");
-                register("application.unexpectedError.technical", "UNEXPECTED_ERROR - Revisa trazas y causa raíz.");
-                register("infrastructure.messageService.unavailable.user", "El servicio de mensajes no está disponible.");
-                register("infrastructure.messageService.unavailable.technical", "MESSAGE_SERVICE_UNAVAILABLE");
-                register("infrastructure.parameterService.unavailable.user", "El servicio de parámetros no está disponible.");
-                register("infrastructure.parameterService.unavailable.technical", "PARAMETER_SERVICE_UNAVAILABLE");
-                register("infrastructure.parameterService.invalidResponse.user", "Valor de parámetro inválido.");
-                register("infrastructure.parameterService.invalidResponse.technical", "PARAMETER_INVALID_RESPONSE");
-                register("domain.user.email.alreadyRegistered.user", "El correo ya se encuentra registrado.");
-                register("domain.user.email.alreadyRegistered.technical", "EMAIL_ALREADY_REGISTERED");
-                register("domain.user.idNumber.alreadyRegistered.user", "El número de documento ya se encuentra registrado.");
-                register("domain.user.idNumber.alreadyRegistered.technical", "ID_NUMBER_ALREADY_REGISTERED");
-                register("domain.user.mobile.alreadyRegistered.user", "El número de móvil ya se encuentra registrado.");
-                register("domain.user.mobile.alreadyRegistered.technical", "MOBILE_ALREADY_REGISTERED");
-                register("request.payload.invalid", "El cuerpo de la solicitud tiene datos con formato inválido.");
-                register("request.payload.invalid.fields",
-                                "Los campos {fields} deben tener un formato válido (UUID si aplica).");
-                register("request.payload.invalid.technical", "INVALID_REQUEST_PAYLOAD");
-	}
+        register("list.viviendas.success", "Viviendas obtenidas exitosamente.");
+        register("get.vivienda.success", "Vivienda obtenida exitosamente.");
+        register("search.viviendas.success", "Viviendas filtradas exitosamente.");
+        register("delete.vivienda.success", "Vivienda eliminada exitosamente.");
+        register("list.viviendas.validation.page.negative", "La página solicitada no puede ser negativa.");
+        register("list.viviendas.validation.size.invalid", "El tamaño de página debe estar entre 1 y 50 registros.");
 
-	private MessageCatalog() {
-		// Evitar instanciación
-	}
+        register("domain.vivienda.numero.duplicated", "Ya existe una vivienda registrada con ese número.");
+        register("domain.vivienda.estado.invalid", "El estado de la vivienda no es válido.");
+        register("domain.vivienda.create.success", "La vivienda fue creada correctamente.");
+        register("domain.vivienda.update.success", "La información de la vivienda fue actualizada correctamente.");
+        register("domain.vivienda.delete.success", "La vivienda fue eliminada correctamente.");
+        register("domain.vivienda.changeEstado.success", "El estado de la vivienda se actualizó correctamente.");
 
-	public static Message getMessageValue(String key) {
-		return MESSAGES.get(key);
-	}
+        register("notification.vivienda.reserva.creada",
+                "Se creó la reserva para la vivienda {numero}. Mantenga informada a la administración.");
+        register("notification.vivienda.reserva.expirada",
+                "La reserva de la vivienda {numero} ha expirado por falta de confirmación.");
+        register("notification.vivienda.inspeccion.programada",
+                "Se programó una inspección para la vivienda {numero} en el conjunto {conjunto}.");
 
-	public static void synchronizeMessageValue(Message message) {
-		register(message.getKey(), message.getValue());
-	}
+        register("application.unexpectedError.user",
+                "Se presentó un error inesperado al consultar los mensajes de vivienda. Intente nuevamente.");
+        register("application.unexpectedError.technical", "UNEXPECTED_VIVIENDA_ERROR - revise trazas y causa raíz.");
+        register("infrastructure.messageService.unavailable.user",
+                "El servicio de mensajes de vivienda no está disponible en este momento.");
+        register("infrastructure.messageService.unavailable.technical", "VIVIENDA_MESSAGE_SERVICE_UNAVAILABLE");
+        register("infrastructure.parameterService.unavailable.user",
+                "El servicio de parámetros de vivienda no está disponible.");
+        register("infrastructure.parameterService.unavailable.technical", "VIVIENDA_PARAMETER_SERVICE_UNAVAILABLE");
+        register("infrastructure.parameterService.invalidResponse.user",
+                "Se recibió un valor de parámetro de vivienda inválido.");
+        register("infrastructure.parameterService.invalidResponse.technical", "VIVIENDA_PARAMETER_INVALID_RESPONSE");
 
-	public static Message removeMessage(String key) {
-		return MESSAGES.remove(key);
-	}
+        register("request.payload.invalid", "El cuerpo de la solicitud de vivienda tiene datos con formato inválido.");
+        register("request.payload.invalid.fields",
+                "Los campos {fields} deben tener un formato válido (UUID si aplica).");
+        register("request.payload.invalid.technical", "INVALID_VIVIENDA_REQUEST_PAYLOAD");
+    }
 
-	public static Map<String, Message> getAllMessages() {
-		return MESSAGES;
-	}
+    private MessageCatalog() {
+        // Evitar instanciación
+    }
 
-	private static void register(final String key, final String value) {
-		MESSAGES.put(key, new Message(key, value));
-	}
+    public static Message getMessageValue(String key) {
+        return MESSAGES.get(key);
+    }
+
+    public static void synchronizeMessageValue(Message message) {
+        register(message.getKey(), message.getValue());
+    }
+
+    public static Message removeMessage(String key) {
+        return MESSAGES.remove(key);
+    }
+
+    public static Map<String, Message> getAllMessages() {
+        return MESSAGES;
+    }
+
+    private static void register(final String key, final String value) {
+        MESSAGES.put(key, new Message(key, value));
+    }
 }
