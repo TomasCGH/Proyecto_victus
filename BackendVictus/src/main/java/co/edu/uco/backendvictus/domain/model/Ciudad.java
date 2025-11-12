@@ -17,7 +17,7 @@ public final class Ciudad {
     private final boolean activo;
 
     private Ciudad(final UUID id, final String nombre, final Departamento departamento, final boolean activo) {
-        this.id = ValidationUtils.validateUUID(id, "Id de la ciudad");
+        this.id = id; //ValidationUtils.validateUUID(id, "Id de la ciudad");
         this.nombre = ValidationUtils.validateRequiredText(nombre, "Nombre de la ciudad", 120);
         this.departamento = departamento;
         this.activo = activo;

@@ -19,7 +19,7 @@ public final class Vivienda {
 
     private Vivienda(final UUID id, final String numero, final ViviendaTipo tipo, final ViviendaEstado estado,
             final ConjuntoResidencial conjunto) {
-        this.id = ValidationUtils.validateUUID(id, "Id de la vivienda");
+        this.id = id; //ValidationUtils.validateUUID(id, "Id de la vivienda");
         this.numero = ValidationUtils.validateRequiredText(numero, "Numero de la vivienda", 10).toUpperCase();
         this.tipo = tipo;
         this.estado = estado;

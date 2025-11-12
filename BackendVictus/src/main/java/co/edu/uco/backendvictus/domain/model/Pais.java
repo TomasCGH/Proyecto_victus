@@ -14,7 +14,7 @@ public final class Pais {
     private final boolean activo;
 
     private Pais(final UUID id, final String nombre, final boolean activo) {
-        this.id = ValidationUtils.validateUUID(id, "Id del pais");
+        this.id = id; //ValidationUtils.validateUUID(id, "Id del pais");
         this.nombre = ValidationUtils.validateRequiredText(nombre, "Nombre del pais", 120);
         this.activo = activo;
     }

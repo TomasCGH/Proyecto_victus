@@ -21,7 +21,7 @@ public final class ConjuntoResidencial {
 
     private ConjuntoResidencial(final UUID id, final String nombre, final String direccion, final Ciudad ciudad,
             final Administrador administrador, final boolean activo) {
-        this.id = ValidationUtils.validateUUID(id, "Id del conjunto residencial");
+        this.id = id; //ValidationUtils.validateUUID(id, "Id del conjunto residencial");
         this.nombre = ValidationUtils.validateRequiredText(nombre, "Nombre del conjunto", 150);
         this.direccion = ValidationUtils.validateRequiredText(direccion, "Direccion", 180);
         this.ciudad = ciudad;

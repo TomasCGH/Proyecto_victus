@@ -17,7 +17,7 @@ public final class Departamento {
     private final boolean activo;
 
     private Departamento(final UUID id, final String nombre, final Pais pais, final boolean activo) {
-        this.id = ValidationUtils.validateUUID(id, "Id del departamento");
+        this.id = id; //ValidationUtils.validateUUID(id, "Id del departamento");
         this.nombre = ValidationUtils.validateRequiredText(nombre, "Nombre del departamento", 120);
         this.pais = pais;
         this.activo = activo;

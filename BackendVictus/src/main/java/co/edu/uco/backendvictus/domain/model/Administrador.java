@@ -21,7 +21,7 @@ public final class Administrador {
     private Administrador(final UUID id, final String primerNombre, final String segundoNombres,
             final String primerApellido, final String segundoApellido, final String email, final String telefono,
             final boolean activo) {
-        this.id = ValidationUtils.validateUUID(id, "Id del administrador");
+        this.id = id; //ValidationUtils.validateUUID(id, "Id del administrador");
         this.primerNombre = ValidationUtils.validateRequiredText(primerNombre, "Primer nombre", 60);
         this.segundoNombres = ValidationUtils.validateOptionalText(segundoNombres, "Segundo nombres", 100);
         this.primerApellido = ValidationUtils.validateRequiredText(primerApellido, "Primer apellido", 60);
