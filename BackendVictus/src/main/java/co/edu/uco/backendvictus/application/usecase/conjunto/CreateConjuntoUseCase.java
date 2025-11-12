@@ -42,7 +42,7 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                 .switchIfEmpty(Mono.error(new ApplicationException("Administrador no encontrado")));
 
         return Mono.zip(ciudadMono, administradorMono)
-                .map(tuple -> mapper.toDomain(UuidGenerator.generate(), request, tuple.getT1(), tuple.getT2()))
+                .map(tuple -> mapper.toDomain(null, request, tuple.getT1(), tuple.getT2()))
                 .flatMap(conjuntoRepository::save)
                 .map(mapper::toResponse);
     }

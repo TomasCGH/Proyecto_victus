@@ -25,7 +25,7 @@ public class CreatePaisUseCase implements UseCase<PaisCreateRequest, PaisRespons
 
     @Override
     public Mono<PaisResponse> execute(final PaisCreateRequest request) {
-        return Mono.fromSupplier(() -> mapper.toDomain(UuidGenerator.generate(), request))
+        return Mono.fromSupplier(() -> mapper.toDomain(null, request))
                 .flatMap(repository::save)
                 .map(mapper::toResponse);
     }

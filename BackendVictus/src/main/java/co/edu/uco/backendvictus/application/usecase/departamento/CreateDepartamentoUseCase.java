@@ -33,7 +33,7 @@ public class CreateDepartamentoUseCase implements UseCase<DepartamentoCreateRequ
     public Mono<DepartamentoResponse> execute(final DepartamentoCreateRequest request) {
         return paisRepository.findById(request.paisId())
                 .switchIfEmpty(Mono.error(new ApplicationException("Pais no encontrado")))
-                .map(pais -> mapper.toDomain(UuidGenerator.generate(), request, pais))
+                .map(pais -> mapper.toDomain(null, request, pais))
                 .flatMap(departamentoRepository::save)
                 .map(mapper::toResponse);
     }

@@ -33,7 +33,7 @@ public class CreateCiudadUseCase implements UseCase<CiudadCreateRequest, CiudadR
     public Mono<CiudadResponse> execute(final CiudadCreateRequest request) {
         return departamentoRepository.findById(request.departamentoId())
                 .switchIfEmpty(Mono.error(new ApplicationException("Departamento no encontrado")))
-                .map(departamento -> mapper.toDomain(UuidGenerator.generate(), request, departamento))
+                .map(departamento -> mapper.toDomain(null, request, departamento))
                 .flatMap(ciudadRepository::save)
                 .map(mapper::toResponse);
     }

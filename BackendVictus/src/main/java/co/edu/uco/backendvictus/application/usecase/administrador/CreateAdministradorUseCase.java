@@ -26,7 +26,7 @@ public class CreateAdministradorUseCase implements UseCase<AdministradorCreateRe
 
     @Override
     public Mono<AdministradorResponse> execute(final AdministradorCreateRequest request) {
-        return Mono.fromSupplier(() -> mapper.toDomain(UuidGenerator.generate(), request))
+        return Mono.fromSupplier(() -> mapper.toDomain(null, request))
                 .flatMap(administradorRepository::save)
                 .map(mapper::toResponse);
     }
