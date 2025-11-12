@@ -34,7 +34,7 @@ public class UpdateCiudadUseCase implements UseCase<CiudadUpdateRequest, CiudadR
                 .switchIfEmpty(Mono.error(new ApplicationException("Ciudad no encontrada")))
                 .flatMap(existente -> departamentoRepository.findById(request.departamentoId())
                         .switchIfEmpty(Mono.error(new ApplicationException("Departamento no encontrado")))
-                        .map(departamento -> existente.update(request.nombre(), departamento, request.activo())))
+                        .map(departamento -> existente.update(request.nombre(), departamento)))
                 .flatMap(ciudadRepository::save)
                 .map(mapper::toResponse);
     }

@@ -15,11 +15,11 @@ import co.edu.uco.backendvictus.domain.model.Pais;
 public abstract class DepartamentoApplicationMapper {
 
     public Departamento toDomain(final UUID id, final DepartamentoCreateRequest request, final Pais pais) {
-        return Departamento.create(id, request.nombre(), pais, request.activo());
+        return Departamento.create(id, request.nombre(), pais);
     }
 
     public Departamento toDomain(final DepartamentoUpdateRequest request, final Pais pais) {
-        return Departamento.create(request.id(), request.nombre(), pais, request.activo());
+        return Departamento.create(request.id(), request.nombre(), pais);
     }
 
     @Mapping(target = "paisId", source = "pais.id")

@@ -45,8 +45,7 @@ public class PaisController {
     @PostMapping
     public Mono<ResponseEntity<ApiSuccessResponse<PaisResponse>>> crear(
             @RequestBody final PaisCreateRequest request) {
-        final PaisCreateRequest sanitized = new PaisCreateRequest(DataSanitizer.sanitizeText(request.nombre()),
-                request.activo());
+        final PaisCreateRequest sanitized = new PaisCreateRequest(DataSanitizer.sanitizeText(request.nombre()));
         return createPaisUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
@@ -62,8 +61,7 @@ public class PaisController {
     @PutMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<PaisResponse>>> actualizar(@PathVariable("id") final UUID id,
                                                                              @RequestBody final PaisUpdateRequest request) {
-        final PaisUpdateRequest sanitized = new PaisUpdateRequest(id, DataSanitizer.sanitizeText(request.nombre()),
-                request.activo());
+        final PaisUpdateRequest sanitized = new PaisUpdateRequest(id, DataSanitizer.sanitizeText(request.nombre()));
         return updatePaisUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);

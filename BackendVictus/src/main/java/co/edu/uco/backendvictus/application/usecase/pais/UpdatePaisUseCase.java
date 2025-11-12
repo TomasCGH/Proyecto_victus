@@ -27,7 +27,7 @@ public class UpdatePaisUseCase implements UseCase<PaisUpdateRequest, PaisRespons
     public Mono<PaisResponse> execute(final PaisUpdateRequest request) {
         return repository.findById(request.id())
                 .switchIfEmpty(Mono.error(new ApplicationException("Pais no encontrado")))
-                .map(existing -> existing.update(request.nombre(), request.activo()))
+                .map(existing -> existing.update(request.nombre()))
                 .flatMap(repository::save)
                 .map(mapper::toResponse);
     }

@@ -13,11 +13,11 @@ import co.edu.uco.backendvictus.domain.model.Pais;
 public abstract class PaisApplicationMapper {
 
     public Pais toDomain(final UUID id, final PaisCreateRequest request) {
-        return Pais.create(id, request.nombre(), request.activo());
+        return Pais.create(id, request.nombre());
     }
 
     public Pais toDomain(final PaisUpdateRequest request) {
-        return Pais.create(request.id(), request.nombre(), request.activo());
+        return Pais.create(request.id(), request.nombre());
     }
 
     public abstract PaisResponse toResponse(Pais pais);

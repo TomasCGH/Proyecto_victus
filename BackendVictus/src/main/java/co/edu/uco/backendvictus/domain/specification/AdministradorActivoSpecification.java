@@ -3,7 +3,7 @@ package co.edu.uco.backendvictus.domain.specification;
 import co.edu.uco.backendvictus.domain.model.Administrador;
 
 /**
- * Validates that an administrator is active.
+ * Placeholder specification; previously validated 'activo'. Now always true to keep pipeline simple.
  */
 public final class AdministradorActivoSpecification implements Specification<Administrador> {
 
@@ -14,6 +14,6 @@ public final class AdministradorActivoSpecification implements Specification<Adm
 
     @Override
     public boolean isSatisfiedBy(final Administrador candidate) {
-        return candidate != null && candidate.isActivo();
+        return candidate != null; // sin atributo 'activo', solo valida no null
     }
 }

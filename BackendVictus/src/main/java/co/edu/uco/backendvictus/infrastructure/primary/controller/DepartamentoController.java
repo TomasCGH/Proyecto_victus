@@ -48,7 +48,7 @@ public class DepartamentoController {
     public Mono<ResponseEntity<ApiSuccessResponse<DepartamentoResponse>>> crear(
             @RequestBody final DepartamentoCreateRequest request) {
         final DepartamentoCreateRequest sanitized = new DepartamentoCreateRequest(request.paisId(),
-                DataSanitizer.sanitizeText(request.nombre()), request.activo());
+                DataSanitizer.sanitizeText(request.nombre()));
         return createDepartamentoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
@@ -65,7 +65,7 @@ public class DepartamentoController {
     public Mono<ResponseEntity<ApiSuccessResponse<DepartamentoResponse>>> actualizar(
             @PathVariable("id") final UUID id, @RequestBody final DepartamentoUpdateRequest request) {
         final DepartamentoUpdateRequest sanitized = new DepartamentoUpdateRequest(id, request.paisId(),
-                DataSanitizer.sanitizeText(request.nombre()), request.activo());
+                DataSanitizer.sanitizeText(request.nombre()));
         return updateDepartamentoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);

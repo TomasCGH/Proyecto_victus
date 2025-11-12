@@ -13,21 +13,21 @@ class ConjuntoResidencialTest {
     @Test
     void shouldFailWhenCityIsMissing() {
         final Administrador administrador = Administrador.create(UUID.randomUUID(), "Ana", null, "Lopez", null,
-                "ana@uco.edu", "1234567", true);
+                "ana@uco.edu", "1234567");
 
         assertThrows(DomainException.class, () -> ConjuntoResidencial.create(UUID.randomUUID(), "Conjunto Central",
-                "Cra 10 #20", null, administrador, true));
+                "Cra 10 #20", null, administrador));
     }
 
     @Test
-    void shouldFailWhenAdministratorIsInactive() {
-        final Pais pais = Pais.create(UUID.randomUUID(), "Colombia", true);
-        final Departamento departamento = Departamento.create(UUID.randomUUID(), "Antioquia", pais, true);
-        final Ciudad ciudad = Ciudad.create(UUID.randomUUID(), "Medellin", departamento, true);
+    void shouldBuildWithValidCityAndAdmin() {
+        final Pais pais = Pais.create(UUID.randomUUID(), "Colombia");
+        final Departamento departamento = Departamento.create(UUID.randomUUID(), "Antioquia", pais);
+        final Ciudad ciudad = Ciudad.create(UUID.randomUUID(), "Medellin", departamento);
         final Administrador administrador = Administrador.create(UUID.randomUUID(), "Pedro", "Jose", "Gomez", null,
-                "pedro@uco.edu", "9876543", false);
+                "pedro@uco.edu", "9876543");
 
-        assertThrows(DomainException.class, () -> ConjuntoResidencial.create(UUID.randomUUID(), "Conjunto Central",
-                "Cra 10 #20", ciudad, administrador, true));
+        ConjuntoResidencial.create(UUID.randomUUID(), "Conjunto Central",
+                "Cra 10 #20", ciudad, administrador);
     }
 }

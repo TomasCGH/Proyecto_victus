@@ -10,14 +10,13 @@ import co.edu.uco.backendvictus.infrastructure.secondary.entity.DepartamentoEnti
 public class DepartamentoEntityMapper {
 
     public DepartamentoEntity toEntity(final Departamento departamento) {
-        return new DepartamentoEntity(departamento.getId(), departamento.getPais().getId(), departamento.getNombre(),
-                departamento.isActivo());
+        return new DepartamentoEntity(departamento.getId(), departamento.getPais().getId(), departamento.getNombre());
     }
 
     public Departamento toDomain(final DepartamentoEntity entity, final Pais pais) {
         if (entity == null) {
             return null;
         }
-        return Departamento.create(entity.getId(), entity.getNombre(), pais, entity.isActivo());
+        return Departamento.create(entity.getId(), entity.getNombre(), pais);
     }
 }

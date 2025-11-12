@@ -49,8 +49,7 @@ public class CiudadController {
             @RequestBody final CiudadCreateRequest request) {
         final CiudadCreateRequest sanitized = new CiudadCreateRequest(
                 request.departamentoId(),
-                DataSanitizer.sanitizeText(request.nombre()),
-                request.activo());
+                DataSanitizer.sanitizeText(request.nombre()));
 
         return createCiudadUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
@@ -72,8 +71,7 @@ public class CiudadController {
         final CiudadUpdateRequest sanitized = new CiudadUpdateRequest(
                 id,
                 request.departamentoId(),
-                DataSanitizer.sanitizeText(request.nombre()),
-                request.activo());
+                DataSanitizer.sanitizeText(request.nombre()));
 
         return updateCiudadUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)

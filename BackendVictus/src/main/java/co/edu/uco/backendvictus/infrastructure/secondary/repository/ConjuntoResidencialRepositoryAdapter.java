@@ -50,6 +50,12 @@ public class ConjuntoResidencialRepositoryAdapter implements ConjuntoResidencial
         return repository.deleteById(id);
     }
 
+    @Override
+    public Mono<ConjuntoResidencial> findByCiudadAndNombre(final UUID ciudadId, final String nombre) {
+        return repository.findByCiudadIdAndNombre(ciudadId, nombre)
+                .flatMap(this::toDomain);
+    }
+
     private Mono<ConjuntoResidencial> toDomain(final ConjuntoResidencialEntity entity) {
         final Mono<co.edu.uco.backendvictus.domain.model.Ciudad> ciudadMono = ciudadRepository
                 .findById(entity.getCiudadId());

@@ -17,13 +17,13 @@ public final class ViviendaFactory {
     }
 
     public static ConjuntoResidencial buildConjunto() {
-        final Pais pais = Pais.create(UUID.randomUUID(), "Colombia", true);
-        final Departamento departamento = Departamento.create(UUID.randomUUID(), "Antioquia", pais, true);
-        final Ciudad ciudad = Ciudad.create(UUID.randomUUID(), "Medellin", departamento, true);
+        final Pais pais = Pais.create(UUID.randomUUID(), "Colombia");
+        final Departamento departamento = Departamento.create(UUID.randomUUID(), "Antioquia", pais);
+        final Ciudad ciudad = Ciudad.create(UUID.randomUUID(), "Medellin", departamento);
         final Administrador administrador = Administrador.create(UUID.randomUUID(), "Ana", null, "Lopez", null,
-                "ana@uco.edu", "1234567", true);
+                "ana@uco.edu", "1234567");
         return ConjuntoResidencial.create(UUID.randomUUID(), "Conjunto Central", "Cra 10 #20", ciudad,
-                administrador, true);
+                administrador);
     }
 
     public static Vivienda buildVivienda(final ConjuntoResidencial conjunto, final String numero) {

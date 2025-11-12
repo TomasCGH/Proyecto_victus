@@ -38,10 +38,11 @@ public final class ApiResponseHelper {
      *
      * @param code    Código de error
      * @param message Mensaje de error
+     * @param source  Fuente del error
      * @param path    Ruta del endpoint
      * @return ApiErrorResponse con detalles del error
      */
-    public static ApiErrorResponse error(final String code, final String message, final String path) {
-        return new ApiErrorResponse(false, code, message, path, OffsetDateTime.now());
+    public static ApiErrorResponse error(final String code, final String message, final String source, final String path) {
+        return new ApiErrorResponse(false, code, message, source, path, OffsetDateTime.now());
     }
 }

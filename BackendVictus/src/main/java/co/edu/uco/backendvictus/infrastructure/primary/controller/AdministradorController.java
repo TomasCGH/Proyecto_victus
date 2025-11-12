@@ -52,7 +52,7 @@ public class AdministradorController {
                 DataSanitizer.sanitizeText(request.segundoNombres()),
                 DataSanitizer.sanitizeText(request.primerApellido()),
                 DataSanitizer.sanitizeText(request.segundoApellido()), DataSanitizer.sanitizeText(request.email()),
-                DataSanitizer.sanitizeText(request.telefono()), request.activo());
+                DataSanitizer.sanitizeText(request.telefono()));
         return createAdministradorUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(body -> ResponseEntity.status(HttpStatus.CREATED).body(body));
@@ -72,7 +72,7 @@ public class AdministradorController {
                 DataSanitizer.sanitizeText(request.primerNombre()), DataSanitizer.sanitizeText(request.segundoNombres()),
                 DataSanitizer.sanitizeText(request.primerApellido()),
                 DataSanitizer.sanitizeText(request.segundoApellido()), DataSanitizer.sanitizeText(request.email()),
-                DataSanitizer.sanitizeText(request.telefono()), request.activo());
+                DataSanitizer.sanitizeText(request.telefono()));
         return updateAdministradorUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);

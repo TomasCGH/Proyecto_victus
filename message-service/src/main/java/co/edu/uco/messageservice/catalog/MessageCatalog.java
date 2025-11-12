@@ -5,73 +5,69 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Catálogo en memoria que expone mensajes de negocio relacionados con el ciclo
- * de vida de las viviendas. Los mensajes son consumidos por otros microservicios
- * para mantener consistencia textual en notificaciones y respuestas HTTP.
+ * de vida de los conjuntos residenciales. Los mensajes son consumidos por otros
+ * microservicios para mantener consistencia textual en notificaciones y
+ * respuestas HTTP.
  */
 public final class MessageCatalog {
 
     private static final Map<String, Message> MESSAGES = new ConcurrentHashMap<>();
 
     static {
+        // Excepciones generales orientadas a conjunto residencial
         register("exception.general.unexpected",
-                "Ha ocurrido un error inesperado al gestionar la vivienda. Intente nuevamente más tarde.");
+                "Ha ocurrido un error inesperado al gestionar el conjunto residencial. Intente nuevamente más tarde.");
         register("exception.general.technical",
-                "Se produjo un error interno al procesar la operación de vivienda.");
+                "Se produjo un error interno al procesar la operación de conjunto residencial.");
         register("exception.general.request",
-                "No fue posible procesar la solicitud de vivienda con la información recibida.");
+                "No fue posible procesar la solicitud de conjunto residencial con la información recibida.");
 
-        register("register.vivienda.success", "Vivienda registrada exitosamente.");
-        register("register.vivienda.validation.numero.required", "El número de la vivienda es obligatorio.");
-        register("register.vivienda.validation.numero.length", "El número de la vivienda debe tener máximo 10 caracteres.");
-        register("register.vivienda.validation.numero.invalidFormat",
-                "El número de la vivienda solo puede contener letras, números y guiones.");
-        register("register.vivienda.validation.tipo.required", "El tipo de vivienda es obligatorio.");
-        register("register.vivienda.validation.tipo.notFound", "El tipo de vivienda indicado no está configurado.");
-        register("register.vivienda.validation.estado.required", "El estado de la vivienda es obligatorio.");
-        register("register.vivienda.validation.estado.invalid",
-                "El estado de la vivienda no es válido para el registro.");
-        register("register.vivienda.validation.conjunto.required", "Debe asignarse un conjunto residencial válido.");
-        register("register.vivienda.validation.conjunto.nombre.length",
-                "El nombre del conjunto residencial no puede superar 80 caracteres.");
+        // Registro/validaciones de conjunto
+        register("register.conjunto.success", "Conjunto residencial registrado exitosamente.");
+        register("register.conjunto.validation.nombre.required", "El nombre del conjunto residencial es obligatorio.");
+        register("register.conjunto.validation.nombre.length", "El nombre del conjunto residencial no puede superar 80 caracteres.");
+        register("register.conjunto.validation.ciudad.required", "Debe asignarse una ciudad válida.");
+        register("register.conjunto.validation.administrador.required", "Debe asignarse un administrador válido.");
 
-        register("list.viviendas.success", "Viviendas obtenidas exitosamente.");
-        register("get.vivienda.success", "Vivienda obtenida exitosamente.");
-        register("search.viviendas.success", "Viviendas filtradas exitosamente.");
-        register("delete.vivienda.success", "Vivienda eliminada exitosamente.");
-        register("list.viviendas.validation.page.negative", "La página solicitada no puede ser negativa.");
-        register("list.viviendas.validation.size.invalid", "El tamaño de página debe estar entre 1 y 50 registros.");
+        // Operaciones de consulta para conjuntos
+        register("list.conjuntos.success", "Conjuntos residenciales obtenidos exitosamente.");
+        register("get.conjunto.success", "Conjunto residencial obtenido exitosamente.");
+        register("search.conjuntos.success", "Conjuntos residenciales filtrados exitosamente.");
+        register("delete.conjunto.success", "Conjunto residencial eliminado exitosamente.");
+        register("list.conjuntos.validation.page.negative", "La página solicitada no puede ser negativa.");
+        register("list.conjuntos.validation.size.invalid", "El tamaño de página debe estar entre 1 y 50 registros.");
 
-        register("domain.vivienda.numero.duplicated", "Ya existe una vivienda registrada con ese número.");
-        register("domain.vivienda.estado.invalid", "El estado de la vivienda no es válido.");
-        register("domain.vivienda.create.success", "La vivienda fue creada correctamente.");
-        register("domain.vivienda.update.success", "La información de la vivienda fue actualizada correctamente.");
-        register("domain.vivienda.delete.success", "La vivienda fue eliminada correctamente.");
-        register("domain.vivienda.changeEstado.success", "El estado de la vivienda se actualizó correctamente.");
+        // Mensajes de dominio de conjunto
+        register("domain.conjunto.nombre.duplicated", "Ya existe un conjunto residencial registrado con ese nombre en la ciudad.");
+        register("domain.conjunto.create.success", "El conjunto residencial fue creado correctamente.");
+        register("domain.conjunto.update.success", "La información del conjunto residencial fue actualizada correctamente.");
+        register("domain.conjunto.delete.success", "El conjunto residencial fue eliminado correctamente.");
 
-        register("notification.vivienda.reserva.creada",
-                "Se creó la reserva para la vivienda {numero}. Mantenga informada a la administración.");
-        register("notification.vivienda.reserva.expirada",
-                "La reserva de la vivienda {numero} ha expirado por falta de confirmación.");
-        register("notification.vivienda.inspeccion.programada",
-                "Se programó una inspección para la vivienda {numero} en el conjunto {conjunto}.");
+        // Notificaciones (ejemplos orientativos para conjunto)
+        register("notification.conjunto.creado",
+                "Se creó el conjunto residencial {conjunto} en la ciudad {ciudad}.");
+        register("notification.conjunto.actualizado",
+                "Se actualizó la información del conjunto residencial {conjunto}.");
 
+        // Mensajes de infraestructura y aplicación específicos de conjunto
         register("application.unexpectedError.user",
-                "Se presentó un error inesperado al consultar los mensajes de vivienda. Intente nuevamente.");
-        register("application.unexpectedError.technical", "UNEXPECTED_VIVIENDA_ERROR - revise trazas y causa raíz.");
+                "Se presentó un error inesperado al consultar los mensajes de conjunto. Intente nuevamente.");
+        register("application.unexpectedError.technical", "UNEXPECTED_CONJUNTO_ERROR - revise trazas y causa raíz.");
         register("infrastructure.messageService.unavailable.user",
-                "El servicio de mensajes de vivienda no está disponible en este momento.");
-        register("infrastructure.messageService.unavailable.technical", "VIVIENDA_MESSAGE_SERVICE_UNAVAILABLE");
+                "El servicio de mensajes de conjuntos residenciales no está disponible en este momento.");
+        register("infrastructure.messageService.unavailable.technical", "CONJUNTO_MESSAGE_SERVICE_UNAVAILABLE");
         register("infrastructure.parameterService.unavailable.user",
-                "El servicio de parámetros de vivienda no está disponible.");
-        register("infrastructure.parameterService.unavailable.technical", "VIVIENDA_PARAMETER_SERVICE_UNAVAILABLE");
+                "El servicio de parámetros de conjunto residencial no está disponible.");
+        register("infrastructure.parameterService.unavailable.technical", "CONJUNTO_PARAMETER_SERVICE_UNAVAILABLE");
         register("infrastructure.parameterService.invalidResponse.user",
-                "Se recibió un valor de parámetro de vivienda inválido.");
-        register("infrastructure.parameterService.invalidResponse.technical", "VIVIENDA_PARAMETER_INVALID_RESPONSE");
+                "Se recibió un valor de parámetro de conjunto residencial inválido.");
+        register("infrastructure.parameterService.invalidResponse.technical", "CONJUNTO_PARAMETER_INVALID_RESPONSE");
 
-        register("request.payload.invalid", "El cuerpo de la solicitud de vivienda tiene datos con formato inválido.");
+        // Validaciones generales de request
+        register("request.payload.invalid", "El cuerpo de la solicitud de conjunto residencial tiene datos con formato inválido.");
         register("request.payload.invalid.fields",
                 "Los campos {fields} deben tener un formato válido (UUID si aplica).");
-        register("request.payload.invalid.technical", "INVALID_VIVIENDA_REQUEST_PAYLOAD");
+        register("request.payload.invalid.technical", "INVALID_CONJUNTO_REQUEST_PAYLOAD");
     }
 
     private MessageCatalog() {

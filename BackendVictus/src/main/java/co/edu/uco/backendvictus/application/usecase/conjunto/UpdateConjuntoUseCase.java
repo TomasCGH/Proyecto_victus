@@ -42,8 +42,7 @@ public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, Con
                                 .switchIfEmpty(Mono.error(new ApplicationException("Ciudad no encontrada"))),
                         administradorRepository.findById(request.administradorId())
                                 .switchIfEmpty(Mono.error(new ApplicationException("Administrador no encontrado")))
-                ).map(tuple -> existente.update(request.nombre(), request.direccion(), tuple.getT1(), tuple.getT2(),
-                        request.activo())))
+                ).map(tuple -> existente.update(request.nombre(), request.direccion(), tuple.getT1(), tuple.getT2())))
                 .flatMap(conjuntoRepository::save)
                 .map(mapper::toResponse);
     }

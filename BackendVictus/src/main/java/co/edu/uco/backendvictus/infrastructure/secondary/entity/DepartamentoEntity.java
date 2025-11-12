@@ -19,15 +19,11 @@ public class DepartamentoEntity {
     @Column("nombre")
     private final String nombre;
 
-    @Column("activo")
-    private final boolean activo;
-
     @PersistenceCreator
-    public DepartamentoEntity(final UUID id, final UUID paisId, final String nombre, final boolean activo) {
+    public DepartamentoEntity(final UUID id, final UUID paisId, final String nombre) {
         this.id = id;
         this.paisId = paisId;
         this.nombre = nombre;
-        this.activo = activo;
     }
 
     public UUID getId() {
@@ -40,9 +36,5 @@ public class DepartamentoEntity {
 
     public String getNombre() {
         return nombre;
-    }
-
-    public boolean isActivo() {
-        return activo;
     }
 }

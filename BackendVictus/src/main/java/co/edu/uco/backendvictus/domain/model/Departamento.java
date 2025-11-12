@@ -14,24 +14,22 @@ public final class Departamento {
     private final UUID id;
     private final String nombre;
     private final Pais pais;
-    private final boolean activo;
 
-    private Departamento(final UUID id, final String nombre, final Pais pais, final boolean activo) {
+    private Departamento(final UUID id, final String nombre, final Pais pais) {
         this.id = id; //ValidationUtils.validateUUID(id, "Id del departamento");
         this.nombre = ValidationUtils.validateRequiredText(nombre, "Nombre del departamento", 120);
         this.pais = pais;
-        this.activo = activo;
 
         SpecificationValidator.check(DepartamentoTienePaisSpecification.INSTANCE, this,
                 "El departamento debe pertenecer a un pais valido");
     }
 
-    public static Departamento create(final UUID id, final String nombre, final Pais pais, final boolean activo) {
-        return new Departamento(id, nombre, pais, activo);
+    public static Departamento create(final UUID id, final String nombre, final Pais pais) {
+        return new Departamento(id, nombre, pais);
     }
 
-    public Departamento update(final String nombre, final Pais pais, final boolean activo) {
-        return new Departamento(this.id, nombre, pais, activo);
+    public Departamento update(final String nombre, final Pais pais) {
+        return new Departamento(this.id, nombre, pais);
     }
 
     public UUID getId() {
@@ -44,9 +42,5 @@ public final class Departamento {
 
     public Pais getPais() {
         return pais;
-    }
-
-    public boolean isActivo() {
-        return activo;
     }
 }

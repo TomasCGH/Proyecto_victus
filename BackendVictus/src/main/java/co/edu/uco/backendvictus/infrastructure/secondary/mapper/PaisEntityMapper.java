@@ -9,13 +9,13 @@ import co.edu.uco.backendvictus.infrastructure.secondary.entity.PaisEntity;
 public class PaisEntityMapper {
 
     public PaisEntity toEntity(final Pais pais) {
-        return new PaisEntity(pais.getId(), pais.getNombre(), pais.isActivo());
+        return new PaisEntity(pais.getId(), pais.getNombre());
     }
 
     public Pais toDomain(final PaisEntity entity) {
         if (entity == null) {
             return null;
         }
-        return Pais.create(entity.getId(), entity.getNombre(), entity.isActivo());
+        return Pais.create(entity.getId(), entity.getNombre());
     }
 }

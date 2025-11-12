@@ -48,12 +48,8 @@ public class ConjuntoResidencialController {
     public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> crear(
             @RequestBody final ConjuntoCreateRequest request) {
 
-        final ConjuntoCreateRequest sanitized = new ConjuntoCreateRequest(
-                request.ciudadId(),
-                request.administradorId(),
-                DataSanitizer.sanitizeText(request.nombre()),
-                DataSanitizer.sanitizeText(request.direccion()),
-                request.activo());
+        final ConjuntoCreateRequest sanitized = new ConjuntoCreateRequest(request.ciudadId(), request.administradorId(),
+                DataSanitizer.sanitizeText(request.nombre()), DataSanitizer.sanitizeText(request.direccion()));
 
         return createConjuntoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
@@ -78,8 +74,7 @@ public class ConjuntoResidencialController {
                 request.ciudadId(),
                 request.administradorId(),
                 DataSanitizer.sanitizeText(request.nombre()),
-                DataSanitizer.sanitizeText(request.direccion()),
-                request.activo());
+                DataSanitizer.sanitizeText(request.direccion()));
 
         return updateConjuntoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)

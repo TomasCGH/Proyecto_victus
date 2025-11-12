@@ -16,11 +16,9 @@ public final class Administrador {
     private final String segundoApellido;
     private final String email;
     private final String telefono;
-    private final boolean activo;
 
     private Administrador(final UUID id, final String primerNombre, final String segundoNombres,
-            final String primerApellido, final String segundoApellido, final String email, final String telefono,
-            final boolean activo) {
+            final String primerApellido, final String segundoApellido, final String email, final String telefono) {
         this.id = id; //ValidationUtils.validateUUID(id, "Id del administrador");
         this.primerNombre = ValidationUtils.validateRequiredText(primerNombre, "Primer nombre", 60);
         this.segundoNombres = ValidationUtils.validateOptionalText(segundoNombres, "Segundo nombres", 100);
@@ -28,20 +26,17 @@ public final class Administrador {
         this.segundoApellido = ValidationUtils.validateOptionalText(segundoApellido, "Segundo apellido", 60);
         this.email = ValidationUtils.validateEmail(email);
         this.telefono = ValidationUtils.validateOptionalText(telefono, "Telefono", 20);
-        this.activo = activo;
     }
 
     public static Administrador create(final UUID id, final String primerNombre, final String segundoNombres,
-            final String primerApellido, final String segundoApellido, final String email, final String telefono,
-            final boolean activo) {
-        return new Administrador(id, primerNombre, segundoNombres, primerApellido, segundoApellido, email, telefono,
-                activo);
+            final String primerApellido, final String segundoApellido, final String email, final String telefono) {
+        return new Administrador(id, primerNombre, segundoNombres, primerApellido, segundoApellido, email, telefono);
     }
 
     public Administrador update(final String primerNombre, final String segundoNombres, final String primerApellido,
-            final String segundoApellido, final String email, final String telefono, final boolean activo) {
+            final String segundoApellido, final String email, final String telefono) {
         return new Administrador(this.id, primerNombre, segundoNombres, primerApellido, segundoApellido, email,
-                telefono, activo);
+                telefono);
     }
 
     public UUID getId() {
@@ -82,9 +77,5 @@ public final class Administrador {
 
     public String getTelefono() {
         return telefono;
-    }
-
-    public boolean isActivo() {
-        return activo;
     }
 }

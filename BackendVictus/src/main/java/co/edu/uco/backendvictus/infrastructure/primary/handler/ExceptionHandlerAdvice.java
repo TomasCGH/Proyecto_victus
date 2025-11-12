@@ -22,34 +22,35 @@ public class ExceptionHandlerAdvice {
     public Mono<ResponseEntity<ApiErrorResponse>> handleDomainException(final DomainException exception,
             final ServerWebExchange exchange) {
         LOGGER.warn("Error de dominio: {}", exception.getMessage());
-        return buildResponse(HttpStatus.BAD_REQUEST, "DOMAIN_ERROR", exception, exchange);
+        return buildResponse(HttpStatus.BAD_REQUEST, "DOMAIN_ERROR", exception, exchange, "backend");
     }
 
     @ExceptionHandler(ApplicationException.class)
     public Mono<ResponseEntity<ApiErrorResponse>> handleApplicationException(final ApplicationException exception,
             final ServerWebExchange exchange) {
         LOGGER.warn("Error de aplicacion: {}", exception.getMessage());
-        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, "APPLICATION_ERROR", exception, exchange);
+        final String source = exception.getSource() != null ? exception.getSource() : "backend";
+        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, "APPLICATION_ERROR", exception, exchange, source);
     }
 
     @ExceptionHandler(InfrastructureException.class)
     public Mono<ResponseEntity<ApiErrorResponse>> handleInfrastructureException(
             final InfrastructureException exception, final ServerWebExchange exchange) {
         LOGGER.error("Error de infraestructura", exception);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INFRASTRUCTURE_ERROR", exception, exchange);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INFRASTRUCTURE_ERROR", exception, exchange, "backend");
     }
 
     @ExceptionHandler(Exception.class)
     public Mono<ResponseEntity<ApiErrorResponse>> handleGenericException(final Exception exception,
             final ServerWebExchange exchange) {
         LOGGER.error("Error inesperado", exception);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", exception, exchange);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", exception, exchange, "backend");
     }
 
     private Mono<ResponseEntity<ApiErrorResponse>> buildResponse(final HttpStatus status, final String code,
-            final Exception exception, final ServerWebExchange exchange) {
+            final Exception exception, final ServerWebExchange exchange, final String source) {
         final String path = exchange.getRequest().getPath().value();
-        final ApiErrorResponse response = ApiErrorResponse.of(code, exception.getMessage(), path);
+        final ApiErrorResponse response = ApiErrorResponse.of(code, exception.getMessage(), source, path);
         return Mono.just(ResponseEntity.status(status).body(response));
     }
 }

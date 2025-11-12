@@ -16,4 +16,6 @@ public interface ConjuntoResidencialRepository {
     Flux<ConjuntoResidencial> findAll();
 
     Mono<Void> deleteById(UUID id);
+
+    Mono<ConjuntoResidencial> findByCiudadAndNombre(UUID ciudadId, String nombre);
 }

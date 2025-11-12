@@ -31,13 +31,9 @@ public class AdministradorEntity {
     @Column("telefono")
     private final String telefono;
 
-    @Column("activo")
-    private final boolean activo;
-
     @PersistenceCreator
     public AdministradorEntity(final UUID id, final String primerNombre, final String segundoNombre,
-            final String primerApellido, final String segundoApellido, final String correo, final String telefono,
-            final boolean activo) {
+            final String primerApellido, final String segundoApellido, final String correo, final String telefono) {
         this.id = id;
         this.primerNombre = primerNombre;
         this.segundoNombre = segundoNombre;
@@ -45,7 +41,6 @@ public class AdministradorEntity {
         this.segundoApellido = segundoApellido;
         this.correo = correo;
         this.telefono = telefono;
-        this.activo = activo;
     }
 
     public UUID getId() {
@@ -74,9 +69,5 @@ public class AdministradorEntity {
 
     public String getTelefono() {
         return telefono;
-    }
-
-    public boolean isActivo() {
-        return activo;
     }
 }

@@ -16,14 +16,10 @@ public class PaisEntity {
     @Column("nombre")
     private final String nombre;
 
-    @Column("activo")
-    private final boolean activo;
-
     @PersistenceCreator
-    public PaisEntity(final UUID id, final String nombre, final boolean activo) {
+    public PaisEntity(final UUID id, final String nombre) {
         this.id = id;
         this.nombre = nombre;
-        this.activo = activo;
     }
 
     public UUID getId() {
@@ -32,9 +28,5 @@ public class PaisEntity {
 
     public String getNombre() {
         return nombre;
-    }
-
-    public boolean isActivo() {
-        return activo;
     }
 }

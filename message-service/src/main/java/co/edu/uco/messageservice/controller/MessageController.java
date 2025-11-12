@@ -20,29 +20,13 @@ import reactor.core.publisher.Mono;
 
 /**
  * Controlador REST responsable de exponer el catálogo de mensajes asociados al
- * dominio de viviendas. Mantiene la semántica reactiva requerida por Spring
- * WebFlux y aplica encabezados de no cacheo en cada respuesta.
+ * dominio de conjuntos residenciales. Mantiene la semántica reactiva requerida
+ * por Spring WebFlux y aplica encabezados de no cacheo en cada respuesta.
  */
 @RestController
-@RequestMapping("/api/v1/viviendas/messages")
+@RequestMapping("/api/v1/messages")
 public class MessageController {
 
-    /**
-     * Ejemplo de payload esperado:
-     *
-     * <pre>
-     * {
-     *   "id": "b6e231e2-ff33-44e8-8a9b-37eab1e0a701",
-     *   "numero": "A-301",
-     *   "tipo": "APARTAMENTO",
-     *   "estado": "DISPONIBLE",
-     *   "conjunto": {
-     *     "id": "f2f1ab32-cc77-4a22-b93a-3c13b68a7d99",
-     *     "nombre": "Conjunto Los Cedros"
-     *   }
-     * }
-     * </pre>
-     */
     private static final CacheControl NO_CACHE = CacheControl.noStore().mustRevalidate();
 
     private final ReactiveMessageService service;
@@ -52,11 +36,10 @@ public class MessageController {
     }
 
     /**
-     * Obtiene de forma reactiva todos los mensajes disponibles para el contexto
-     * de viviendas.
+     * Obtiene de forma reactiva todos los mensajes disponibles.
      */
     @GetMapping
-    public Flux<Message> getAllViviendaMessages() {
+    public Flux<Message> getAllMessages() {
         return service.findAll();
     }
 
@@ -64,7 +47,7 @@ public class MessageController {
      * Busca un mensaje específico por su clave única.
      */
     @GetMapping("/{key}")
-    public Mono<ResponseEntity<Message>> getViviendaMessage(@PathVariable String key) {
+    public Mono<ResponseEntity<Message>> getMessage(@PathVariable String key) {
         return service.findByKey(key)
                 .map(value -> ResponseEntity.ok()
                         .cacheControl(NO_CACHE)
@@ -79,10 +62,10 @@ public class MessageController {
     }
 
     /**
-     * Crea o actualiza un mensaje asociado al dominio de viviendas.
+     * Crea o actualiza un mensaje del catálogo.
      */
     @PostMapping
-    public Mono<ResponseEntity<Message>> createViviendaMessage(@RequestBody Message body) {
+    public Mono<ResponseEntity<Message>> createMessage(@RequestBody Message body) {
         Message sanitizedMessage = new Message(body.getKey(), body.getValue());
         return service.upsert(sanitizedMessage)
                 .map(saved -> ResponseEntity.status(HttpStatus.CREATED)
@@ -96,7 +79,7 @@ public class MessageController {
      * Actualiza el valor de un mensaje previamente registrado.
      */
     @PutMapping("/{key}")
-    public Mono<ResponseEntity<Message>> updateViviendaMessage(@PathVariable String key, @RequestBody Message body) {
+    public Mono<ResponseEntity<Message>> updateMessage(@PathVariable String key, @RequestBody Message body) {
         Message sanitizedMessage = new Message(key, body.getValue());
         return service.upsert(sanitizedMessage)
                 .map(saved -> ResponseEntity.ok()
@@ -106,19 +89,8 @@ public class MessageController {
                         .body(saved));
     }
 
-    /*
-     * @DeleteMapping("/{key}") public Mono<ResponseEntity<Void>>
-     * deleteViviendaMessage(@PathVariable String key) { return service.delete(key)
-     *         .map(removed -> ResponseEntity.noContent()
-     *                 .cacheControl(NO_CACHE)
-     *                 .header("Pragma", "no-cache")
-     *                 .header("Expires", "0")
-     *                 .build())
-     *         .defaultIfEmpty(ResponseEntity.notFound().build()); }
-     */
-
     /**
-     * Expone un flujo continuo de los mensajes modificados para las viviendas.
+     * Expone un flujo continuo de los mensajes modificados.
      */
     @GetMapping(value = "/stream", produces = "text/event-stream")
     public Flux<ServerSentEvent<Message>> streamUpdates() {

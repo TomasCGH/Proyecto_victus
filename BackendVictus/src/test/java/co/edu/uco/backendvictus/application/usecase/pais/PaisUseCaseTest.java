@@ -35,7 +35,7 @@ class PaisUseCaseTest {
     @Test
     void shouldCreatePais() {
         final CreatePaisUseCase useCase = new CreatePaisUseCase(repository, mapper);
-        final PaisCreateRequest request = new PaisCreateRequest("  Colombia  ", true);
+        final PaisCreateRequest request = new PaisCreateRequest("  Colombia  ");
 
         StepVerifier.create(useCase.execute(request))
                 .assertNext(response -> {
@@ -57,7 +57,7 @@ class PaisUseCaseTest {
 
         final PaisResponseHolder holder = new PaisResponseHolder();
 
-        StepVerifier.create(createUseCase.execute(new PaisCreateRequest("Peru", true)))
+        StepVerifier.create(createUseCase.execute(new PaisCreateRequest("Peru")))
                 .assertNext(response -> {
                     holder.response = response;
                     assertEquals("Peru", response.nombre());
@@ -66,7 +66,7 @@ class PaisUseCaseTest {
 
         final UUID paisId = holder.response.id();
 
-        final PaisUpdateRequest updateRequest = new PaisUpdateRequest(paisId, "Peru Actualizado", false);
+        final PaisUpdateRequest updateRequest = new PaisUpdateRequest(paisId, "Peru Actualizado");
 
         StepVerifier.create(updateUseCase.execute(updateRequest))
                 .assertNext(updated -> {

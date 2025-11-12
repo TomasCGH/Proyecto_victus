@@ -34,7 +34,7 @@ public class UpdateDepartamentoUseCase implements UseCase<DepartamentoUpdateRequ
                 .switchIfEmpty(Mono.error(new ApplicationException("Departamento no encontrado")))
                 .flatMap(existente -> paisRepository.findById(request.paisId())
                         .switchIfEmpty(Mono.error(new ApplicationException("Pais no encontrado")))
-                        .map(pais -> existente.update(request.nombre(), pais, request.activo())))
+                        .map(pais -> existente.update(request.nombre(), pais)))
                 .flatMap(departamentoRepository::save)
                 .map(mapper::toResponse);
     }

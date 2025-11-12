@@ -2,15 +2,13 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS pais (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nombre VARCHAR(100) NOT NULL,
-    activo BOOLEAN NOT NULL DEFAULT TRUE
+    nombre VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS departamento (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     pais_id UUID NOT NULL,
     nombre VARCHAR(100) NOT NULL,
-    activo BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_departamento_pais FOREIGN KEY (pais_id) REFERENCES pais(id) ON DELETE CASCADE
 );
 
@@ -18,7 +16,6 @@ CREATE TABLE IF NOT EXISTS ciudad (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     departamento_id UUID NOT NULL,
     nombre VARCHAR(100) NOT NULL,
-    activo BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_ciudad_departamento FOREIGN KEY (departamento_id) REFERENCES departamento(id) ON DELETE CASCADE
 );
 
@@ -29,8 +26,7 @@ CREATE TABLE IF NOT EXISTS administrador (
     primer_apellido VARCHAR(100) NOT NULL,
     segundo_apellido VARCHAR(100),
     correo VARCHAR(255) NOT NULL UNIQUE,
-    telefono VARCHAR(50),
-    activo BOOLEAN NOT NULL DEFAULT TRUE
+    telefono VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS conjunto_residencial (
@@ -39,7 +35,6 @@ CREATE TABLE IF NOT EXISTS conjunto_residencial (
     direccion VARCHAR(255),
     ciudad_id UUID NOT NULL,
     administrador_id UUID NOT NULL,
-    activo BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_conjunto_ciudad FOREIGN KEY (ciudad_id) REFERENCES ciudad(id) ON DELETE CASCADE,
     CONSTRAINT fk_conjunto_administrador FOREIGN KEY (administrador_id) REFERENCES administrador(id) ON DELETE SET NULL
 );

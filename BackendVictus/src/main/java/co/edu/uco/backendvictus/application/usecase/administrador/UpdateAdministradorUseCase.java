@@ -29,8 +29,7 @@ public class UpdateAdministradorUseCase implements UseCase<AdministradorUpdateRe
         return administradorRepository.findById(request.id())
                 .switchIfEmpty(Mono.error(new ApplicationException("Administrador no encontrado")))
                 .map(existente -> existente.update(request.primerNombre(), request.segundoNombres(),
-                        request.primerApellido(), request.segundoApellido(), request.email(), request.telefono(),
-                        request.activo()))
+                        request.primerApellido(), request.segundoApellido(), request.email(), request.telefono()))
                 .flatMap(administradorRepository::save)
                 .map(mapper::toResponse);
     }

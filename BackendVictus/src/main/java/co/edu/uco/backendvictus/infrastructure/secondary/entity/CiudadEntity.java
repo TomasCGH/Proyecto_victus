@@ -19,15 +19,11 @@ public class CiudadEntity {
     @Column("nombre")
     private final String nombre;
 
-    @Column("activo")
-    private final boolean activo;
-
     @PersistenceCreator
-    public CiudadEntity(final UUID id, final UUID departamentoId, final String nombre, final boolean activo) {
+    public CiudadEntity(final UUID id, final UUID departamentoId, final String nombre) {
         this.id = id;
         this.departamentoId = departamentoId;
         this.nombre = nombre;
-        this.activo = activo;
     }
 
     public UUID getId() {
@@ -40,9 +36,5 @@ public class CiudadEntity {
 
     public String getNombre() {
         return nombre;
-    }
-
-    public boolean isActivo() {
-        return activo;
     }
 }

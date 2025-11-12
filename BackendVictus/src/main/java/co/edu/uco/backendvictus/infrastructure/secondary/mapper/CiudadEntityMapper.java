@@ -10,14 +10,13 @@ import co.edu.uco.backendvictus.infrastructure.secondary.entity.CiudadEntity;
 public class CiudadEntityMapper {
 
     public CiudadEntity toEntity(final Ciudad ciudad) {
-        return new CiudadEntity(ciudad.getId(), ciudad.getDepartamento().getId(), ciudad.getNombre(),
-                ciudad.isActivo());
+        return new CiudadEntity(ciudad.getId(), ciudad.getDepartamento().getId(), ciudad.getNombre());
     }
 
     public Ciudad toDomain(final CiudadEntity entity, final Departamento departamento) {
         if (entity == null) {
             return null;
         }
-        return Ciudad.create(entity.getId(), entity.getNombre(), departamento, entity.isActivo());
+        return Ciudad.create(entity.getId(), entity.getNombre(), departamento);
     }
 }
