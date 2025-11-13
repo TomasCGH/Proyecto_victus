@@ -64,7 +64,7 @@ public class CreateViviendaUseCase implements UseCase<ViviendaCreateRequest, Viv
 
     private Mono<Vivienda> buildAndValidate(final ViviendaCreateRequest request,
             final ConjuntoResidencial conjunto) {
-        final Vivienda vivienda = mapper.toDomain(UuidGenerator.generate(), request, conjunto);
+        final Vivienda vivienda = mapper.toDomain(null, request, conjunto);
         return viviendaRepository.findByConjuntoAndNumero(conjunto.getId(), vivienda.getNumero())
                 .flatMap(existing -> messageClient.getMessage("domain.vivienda.numero.duplicated")
                         .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
