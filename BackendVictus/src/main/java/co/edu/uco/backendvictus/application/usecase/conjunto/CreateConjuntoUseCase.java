@@ -76,7 +76,7 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                                     })
                             )
                             .switchIfEmpty(Mono.defer(() -> {
-                                final ConjuntoResidencial nuevo = mapper.toDomain(UuidGenerator.generate(), request, ciudad, admin);
+                                final ConjuntoResidencial nuevo = mapper.toDomain(null, request, ciudad, admin);
                                 return conjuntoRepository.save(nuevo);
                             }));
                 })
