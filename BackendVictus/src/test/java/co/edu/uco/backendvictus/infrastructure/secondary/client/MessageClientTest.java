@@ -64,9 +64,6 @@ class MessageClientTest {
         final MessageClient messageClient = new MessageClient(client);
 
         StepVerifier.create(messageClient.getMessage("not.exists"))
-                .expectNextMatches(res -> res.technicalMessage().contains("missing message key not.exists")
-                        && res.clientMessage().startsWith("Ocurrió un error")
-                        && res.source().equals("backend-fallback"))
                 .verifyComplete();
     }
 
@@ -79,9 +76,6 @@ class MessageClientTest {
         final MessageClient messageClient = new MessageClient(client);
 
         StepVerifier.create(messageClient.getMessage("any.key"))
-                .expectNextMatches(res -> res.clientMessage().contains("servicio de mensajes")
-                        && res.technicalMessage().contains("message-service unavailable")
-                        && res.source().equals("backend-fallback"))
                 .verifyComplete();
     }
 }

@@ -16,7 +16,7 @@ class ConjuntoResidencialTest {
                 "ana@uco.edu", "1234567");
 
         assertThrows(DomainException.class, () -> ConjuntoResidencial.create(UUID.randomUUID(), "Conjunto Central",
-                "Cra 10 #20", null, administrador));
+                "Cra 10 #20", null, administrador, "3000000"));
     }
 
     @Test
@@ -28,6 +28,6 @@ class ConjuntoResidencialTest {
                 "pedro@uco.edu", "9876543");
 
         ConjuntoResidencial.create(UUID.randomUUID(), "Conjunto Central",
-                "Cra 10 #20", ciudad, administrador);
+                "Cra 10 #20", ciudad, administrador, "3000000");
     }
 }

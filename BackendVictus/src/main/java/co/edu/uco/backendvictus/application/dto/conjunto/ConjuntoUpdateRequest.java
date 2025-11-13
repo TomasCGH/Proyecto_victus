@@ -2,5 +2,6 @@ package co.edu.uco.backendvictus.application.dto.conjunto;
 
 import java.util.UUID;
 
-public record ConjuntoUpdateRequest(UUID id, UUID ciudadId, UUID administradorId, String nombre, String direccion) {
+public record ConjuntoUpdateRequest(UUID id, UUID ciudadId, UUID administradorId, String nombre, String direccion,
+        String telefono) {
 }
