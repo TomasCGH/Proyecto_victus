@@ -49,7 +49,8 @@ public class ConjuntoResidencialController {
             @RequestBody final ConjuntoCreateRequest request) {
 
         final ConjuntoCreateRequest sanitized = new ConjuntoCreateRequest(request.ciudadId(), request.administradorId(),
-                DataSanitizer.sanitizeText(request.nombre()), DataSanitizer.sanitizeText(request.direccion()));
+                DataSanitizer.sanitizeText(request.nombre()), DataSanitizer.sanitizeText(request.direccion()),
+                DataSanitizer.sanitizeText(request.telefono()));
 
         return createConjuntoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)
@@ -74,7 +75,8 @@ public class ConjuntoResidencialController {
                 request.ciudadId(),
                 request.administradorId(),
                 DataSanitizer.sanitizeText(request.nombre()),
-                DataSanitizer.sanitizeText(request.direccion()));
+                DataSanitizer.sanitizeText(request.direccion()),
+                DataSanitizer.sanitizeText(request.telefono()));
 
         return updateConjuntoUseCase.execute(sanitized)
                 .map(ApiSuccessResponse::of)

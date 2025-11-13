@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS conjunto_residencial (
     direccion VARCHAR(255),
     ciudad_id UUID NOT NULL,
     administrador_id UUID NOT NULL,
+    telefono VARCHAR(20) NOT NULL UNIQUE,
     CONSTRAINT fk_conjunto_ciudad FOREIGN KEY (ciudad_id) REFERENCES ciudad(id) ON DELETE CASCADE,
     CONSTRAINT fk_conjunto_administrador FOREIGN KEY (administrador_id) REFERENCES administrador(id) ON DELETE SET NULL
 );

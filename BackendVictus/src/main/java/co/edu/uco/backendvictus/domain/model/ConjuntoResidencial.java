@@ -17,14 +17,16 @@ public final class ConjuntoResidencial {
     private final String direccion;
     private final Ciudad ciudad;
     private final Administrador administrador;
+    private final String telefono;
 
     private ConjuntoResidencial(final UUID id, final String nombre, final String direccion, final Ciudad ciudad,
-            final Administrador administrador) {
+            final Administrador administrador, final String telefono) {
         this.id = id; //ValidationUtils.validateUUID(id, "Id del conjunto residencial");
         this.nombre = ValidationUtils.validateRequiredText(nombre, "Nombre del conjunto", 150);
         this.direccion = ValidationUtils.validateRequiredText(direccion, "Direccion", 180);
         this.ciudad = ciudad;
         this.administrador = administrador;
+        this.telefono = ValidationUtils.validateRequiredText(telefono, "Telefono del conjunto", 20);
 
         SpecificationValidator.check(ConjuntoAdministradorActivoSpecification.INSTANCE, this,
                 "El conjunto residencial requiere un administrador activo");
@@ -33,13 +35,13 @@ public final class ConjuntoResidencial {
     }
 
     public static ConjuntoResidencial create(final UUID id, final String nombre, final String direccion,
-            final Ciudad ciudad, final Administrador administrador) {
-        return new ConjuntoResidencial(id, nombre, direccion, ciudad, administrador);
+            final Ciudad ciudad, final Administrador administrador, final String telefono) {
+        return new ConjuntoResidencial(id, nombre, direccion, ciudad, administrador, telefono);
     }
 
     public ConjuntoResidencial update(final String nombre, final String direccion, final Ciudad ciudad,
-            final Administrador administrador) {
-        return new ConjuntoResidencial(this.id, nombre, direccion, ciudad, administrador);
+            final Administrador administrador, final String telefono) {
+        return new ConjuntoResidencial(this.id, nombre, direccion, ciudad, administrador, telefono);
     }
 
     public UUID getId() {
@@ -60,5 +62,9 @@ public final class ConjuntoResidencial {
 
     public Administrador getAdministrador() {
         return administrador;
+    }
+
+    public String getTelefono() {
+        return telefono;
     }
 }

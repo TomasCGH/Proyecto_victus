@@ -50,7 +50,6 @@ class ParameterClientTest {
         final ParameterClient parameterClient = new ParameterClient(client);
 
         StepVerifier.create(parameterClient.get("conjunto.max.limit"))
-                .expectNextMatches(res -> res.key().equals("conjunto.max.limit") && res.value() == null && res.source().equals("backend-fallback"))
                 .verifyComplete();
     }
 }

@@ -25,14 +25,18 @@ public class ConjuntoResidencialEntity {
     @Column("administrador_id")
     private final UUID administradorId;
 
+    @Column("telefono")
+    private final String telefono;
+
     @PersistenceCreator
     public ConjuntoResidencialEntity(final UUID id, final String nombre, final String direccion,
-            final UUID ciudadId, final UUID administradorId) {
+            final UUID ciudadId, final UUID administradorId, final String telefono) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
         this.ciudadId = ciudadId;
         this.administradorId = administradorId;
+        this.telefono = telefono;
     }
 
     public UUID getId() {
@@ -53,5 +57,9 @@ public class ConjuntoResidencialEntity {
 
     public UUID getAdministradorId() {
         return administradorId;
+    }
+
+    public String getTelefono() {
+        return telefono;
     }
 }

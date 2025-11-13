@@ -25,12 +25,14 @@ public class ExternalClientsConfig {
     @Bean
     @Qualifier("messageWebClient")
     public WebClient messageWebClient(@Value("${services.message.base-url}") final String baseUrl) {
+        LOGGER.info("Inicializando MessageClient con base URL {}", baseUrl);
         return buildWebClient(baseUrl);
     }
 
     @Bean
     @Qualifier("parameterWebClient")
     public WebClient parameterWebClient(@Value("${services.parameter.base-url}") final String baseUrl) {
+        LOGGER.info("Inicializando ParameterClient con base URL {}", baseUrl);
         return buildWebClient(baseUrl);
     }
 
