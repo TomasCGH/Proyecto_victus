@@ -13,7 +13,7 @@ public class ConjuntoResidencialEntityMapper {
     public ConjuntoResidencialEntity toEntity(final ConjuntoResidencial conjuntoResidencial) {
         return new ConjuntoResidencialEntity(conjuntoResidencial.getId(), conjuntoResidencial.getNombre(),
                 conjuntoResidencial.getDireccion(), conjuntoResidencial.getCiudad().getId(),
-                conjuntoResidencial.getAdministrador().getId());
+                conjuntoResidencial.getAdministrador().getId(), conjuntoResidencial.getTelefono());
     }
 
     public ConjuntoResidencial toDomain(final ConjuntoResidencialEntity entity, final Ciudad ciudad,
@@ -22,6 +22,6 @@ public class ConjuntoResidencialEntityMapper {
             return null;
         }
         return ConjuntoResidencial.create(entity.getId(), entity.getNombre(), entity.getDireccion(), ciudad,
-                administrador);
+                administrador, entity.getTelefono());
     }
 }

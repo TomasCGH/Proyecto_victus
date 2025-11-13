@@ -17,12 +17,14 @@ public abstract class ConjuntoApplicationMapper {
 
     public ConjuntoResidencial toDomain(final UUID id, final ConjuntoCreateRequest request, final Ciudad ciudad,
             final Administrador administrador) {
-        return ConjuntoResidencial.create(id, request.nombre(), request.direccion(), ciudad, administrador);
+        return ConjuntoResidencial.create(id, request.nombre(), request.direccion(), ciudad, administrador,
+                request.telefono());
     }
 
     public ConjuntoResidencial toDomain(final ConjuntoUpdateRequest request, final Ciudad ciudad,
             final Administrador administrador) {
-        return ConjuntoResidencial.create(request.id(), request.nombre(), request.direccion(), ciudad, administrador);
+        return ConjuntoResidencial.create(request.id(), request.nombre(), request.direccion(), ciudad, administrador,
+                request.telefono());
     }
 
     @Mapping(target = "ciudadId", source = "ciudad.id")

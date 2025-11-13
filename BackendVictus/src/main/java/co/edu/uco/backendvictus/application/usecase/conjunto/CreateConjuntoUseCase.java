@@ -62,24 +62,30 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
 
         return parameterClient.get("conjunto.max.limit")
                 .doOnNext(p -> LOGGER.info("ParameterService → parámetro 'conjunto.max.limit' = {} (source={})", p.value(), p.source()))
-                .onErrorResume(ex -> Mono.empty())
                 .then(Mono.zip(ciudadMono, administradorMono))
                 .flatMap(tuple -> {
                     final Ciudad ciudad = tuple.getT1();
                     final Administrador admin = tuple.getT2();
                     // Validación de duplicado por (ciudadId, nombre normalizado)
                     return conjuntoRepository.findByCiudadAndNombre(ciudad.getId(), request.nombre())
-                            .flatMap(existing -> messageClient.getMessage("domain.conjunto.nombre.duplicated")
-                                    .flatMap(msg -> {
-                                        LOGGER.warn("Creación de conjunto duplicado. Technical='{}'", msg.technicalMessage());
-                                        return Mono.<ConjuntoResidencial>error(new ApplicationException(msg.clientMessage(), msg.source()));
-                                    })
-                            )
+                            .flatMap(existing -> duplicateConjuntoError())
                             .switchIfEmpty(Mono.defer(() -> {
                                 final ConjuntoResidencial nuevo = mapper.toDomain(null, request, ciudad, admin);
                                 return conjuntoRepository.save(nuevo);
                             }));
                 })
                 .map(mapper::toResponse);
+    }
+
+    private Mono<ConjuntoResidencial> duplicateConjuntoError() {
+        return messageClient.getMessage("domain.conjunto.nombre.duplicated")
+                .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
+                        "Duplicate residential complex detected.",
+                        "Ya existe un conjunto residencial registrado con ese nombre.",
+                        "backend-default")))
+                .flatMap(msg -> {
+                    LOGGER.warn("Creación de conjunto duplicado. Technical='{}'", msg.technicalMessage());
+                    return Mono.error(new ApplicationException(msg.clientMessage(), msg.source()));
+                });
     }
 }

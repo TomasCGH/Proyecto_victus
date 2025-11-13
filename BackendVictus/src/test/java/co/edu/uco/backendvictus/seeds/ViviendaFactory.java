@@ -23,7 +23,7 @@ public final class ViviendaFactory {
         final Administrador administrador = Administrador.create(UUID.randomUUID(), "Ana", null, "Lopez", null,
                 "ana@uco.edu", "1234567");
         return ConjuntoResidencial.create(UUID.randomUUID(), "Conjunto Central", "Cra 10 #20", ciudad,
-                administrador);
+                administrador, "3000000");
     }
 
     public static Vivienda buildVivienda(final ConjuntoResidencial conjunto, final String numero) {

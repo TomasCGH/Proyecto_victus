@@ -53,7 +53,6 @@ public class CreateViviendaUseCase implements UseCase<ViviendaCreateRequest, Viv
     public Mono<ViviendaResponse> execute(final ViviendaCreateRequest request) {
         return parameterClient.get("vivienda.max.limit")
                 .doOnNext(p -> LOGGER.info("ParameterService → parámetro 'vivienda.max.limit' = {} (source={})", p.value(), p.source()))
-                .onErrorResume(ex -> Mono.empty())
                 .then(
                         conjuntoRepository.findById(request.conjuntoId())
                                 .switchIfEmpty(Mono.error(new ApplicationException("Conjunto residencial no encontrado", "backend")))
@@ -68,6 +67,10 @@ public class CreateViviendaUseCase implements UseCase<ViviendaCreateRequest, Viv
         final Vivienda vivienda = mapper.toDomain(UuidGenerator.generate(), request, conjunto);
         return viviendaRepository.findByConjuntoAndNumero(conjunto.getId(), vivienda.getNumero())
                 .flatMap(existing -> messageClient.getMessage("domain.vivienda.numero.duplicated")
+                        .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
+                                "Duplicate housing detected.",
+                                "Ya existe una vivienda con ese número en el conjunto.",
+                                "backend-default")))
                         .flatMap(msg -> {
                             LOGGER.warn("Creación de vivienda duplicada detectada. Technical='{}'", msg.technicalMessage());
                             return Mono.<Vivienda>error(new ApplicationException(msg.clientMessage(), msg.source()));
