@@ -2,7 +2,6 @@ package co.edu.uco.backendvictus.infrastructure.primary.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -41,21 +40,17 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(WebExchangeBindException.class)
     public Mono<ResponseEntity<ApiErrorResponse>> handleValidationErrors(final WebExchangeBindException ex,
             final ServerWebExchange exchange) {
-        final ServerHttpRequest request = exchange.getRequest();
         final String messageKey = ex.getAllErrors().stream()
                 .findFirst()
                 .map(ObjectError::getDefaultMessage)
                 .orElse("validation.general");
 
         return messageClient.getMessage(messageKey)
-                .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                        ex.getMessage(),
-                        "Datos inválidos en el formulario.",
-                        "backend-fallback")))
-                .map(msg -> {
+                .switchIfEmpty(messageClient.getMessage("validation.general"))
+                .flatMap(msg -> {
                     final ApiErrorResponse response = new ApiErrorResponse(false, "APPLICATION_ERROR",
-                            msg.clientMessage(), msg.source(), request.getPath().value(), OffsetDateTime.now());
-                    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+                            msg.clientMessage(), msg.source(), exchange.getRequest().getPath().value(), OffsetDateTime.now());
+                    return Mono.just(ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response));
                 });
     }
 

@@ -44,14 +44,19 @@ public final class MessageCatalog {
         register("domain.data.integrity", "Database integrity constraint violated.", "Los datos ingresados no son válidos o faltan referencias requeridas.");
         register("domain.general.error", "Unexpected error in conjunto domain.", "Ocurrió un error inesperado. Intenta nuevamente.");
         // Validación - claves utilizadas por las anotaciones jakarta.validation en DTOs
-        register("validation.required.nombre", "Name is required.", "El campo nombre es obligatorio.");
-        register("validation.required.telefono", "Phone is required.", "El campo teléfono es obligatorio.");
+        register("validation.required.nombre", "Name is required.", "El nombre del conjunto es obligatorio.");
+        register("validation.required.telefono", "Phone is required.", "El teléfono es obligatorio.");
         register("validation.required.ciudad", "City is required.", "Debes seleccionar una ciudad.");
         register("validation.required.administrador", "Administrator is required.", "Debes seleccionar un administrador.");
         register("validation.format.telefono", "Phone format invalid.", "El teléfono solo debe contener números.");
+        register("validation.length.telefono", "Phone length invalid.", "El teléfono debe tener entre 7 y 10 dígitos.");
         register("validation.maxlength.telefono", "Phone length exceeded.", "El teléfono no puede tener más de 10 dígitos.");
         register("validation.minlength.nombre", "Name too short.", "El nombre debe tener al menos 3 caracteres.");
+        register("validation.size.nombre", "Name length invalid.", "El nombre debe tener entre 3 y 100 caracteres.");
+        register("validation.required.direccion", "Address is required.", "La dirección es obligatoria.");
+        register("validation.size.direccion", "Address length invalid.", "La dirección debe tener entre 3 y 150 caracteres.");
         register("validation.required.uuid", "UUIDs missing.", "Debes seleccionar ciudad y administrador antes de continuar.");
+        register("validation.general", "Validation error detected.", "Hay errores en la información enviada.");
 
         // Notificaciones (ejemplos orientativos para conjunto)
         register("notification.conjunto.creado",
