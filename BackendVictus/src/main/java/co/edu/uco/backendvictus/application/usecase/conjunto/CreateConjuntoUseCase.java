@@ -12,7 +12,6 @@ import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.crosscutting.helpers.LoggerHelper;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import co.edu.uco.backendvictus.domain.model.Administrador;
 import co.edu.uco.backendvictus.domain.model.Ciudad;
@@ -57,23 +56,24 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
     @Override
     public Mono<ConjuntoResponse> execute(final ConjuntoCreateRequest request) {
 
-        // Validaciones explícitas de entrada
         if (request.ciudadId() == null || request.administradorId() == null) {
-            return messageClient.getMessage("validation.required.uuid")
-                    .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                            "uuid.missing",
-                            "Debes seleccionar ciudad y administrador antes de continuar.",
-                            "backend-fallback")))
-                    .flatMap(msg -> Mono.error(new ApplicationException(msg.clientMessage(), msg.source())));
+            return errorFromMessage("validation.required.uuid");
         }
 
-        if (request.telefono() == null || !request.telefono().matches("^[0-9]{1,10}$")) {
-            return messageClient.getMessage("validation.format.telefono")
-                    .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                            "telefono.invalid",
-                            "El teléfono debe contener solo números y máximo 10 dígitos.",
-                            "backend-fallback")))
-                    .flatMap(msg -> Mono.error(new ApplicationException(msg.clientMessage(), msg.source())));
+        if (request.telefono() == null || request.telefono().isBlank()) {
+            return errorFromMessage("validation.required.telefono");
+        }
+
+        if (!request.telefono().matches("^[0-9]+$")) {
+            return errorFromMessage("validation.format.telefono");
+        }
+
+        if (request.telefono().length() < 7 || request.telefono().length() > 10) {
+            return errorFromMessage("validation.length.telefono");
+        }
+
+        if (request.direccion() == null || request.direccion().isBlank()) {
+            return errorFromMessage("validation.required.direccion");
         }
 
         final Mono<Ciudad> ciudadMono = ciudadRepository.findById(request.ciudadId())
@@ -86,74 +86,34 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                     final Ciudad ciudad = tuple.getT1();
                     final Administrador admin = tuple.getT2();
 
-                    // Verificar duplicado por teléfono (puede retornar múltiples registros)
                     return conjuntoRepository.findAllByTelefono(request.telefono())
                             .collectList()
                             .flatMap(existentes -> {
-                                if (existentes != null && !existentes.isEmpty()) {
-                                    return messageClient.getMessage("domain.conjunto.telefono.duplicated")
-                                            .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                                                    "duplicate.phone",
-                                                    "Ya existe un conjunto residencial registrado con ese teléfono.",
-                                                    "backend-fallback")))
-                                            .flatMap(msg -> Mono.<ConjuntoResidencial>error(new ApplicationException(msg.clientMessage(), msg.source())));
+                                if (!existentes.isEmpty()) {
+                                    return errorFromMessage("domain.conjunto.telefono.duplicated");
                                 }
 
-                                // Verificar duplicado por nombre y ciudad
                                 return conjuntoRepository.findByCiudadAndNombre(ciudad.getId(), request.nombre())
-                                        .flatMap(existing -> messageClient.getMessage("domain.conjunto.nombre.duplicated")
-                                                .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                                                        "duplicate.name",
-                                                        "Ya existe un conjunto con ese nombre en la misma ciudad.",
-                                                        "backend-fallback")))
-                                                .flatMap(msg -> Mono.<ConjuntoResidencial>error(new ApplicationException(msg.clientMessage(), msg.source()))))
-                                         .switchIfEmpty(Mono.defer(() -> {
-                                             final ConjuntoResidencial nuevo = mapper.toDomain(null, request, ciudad, admin);
-                                             return conjuntoRepository.save(nuevo);
-                                         }));
+                                        .flatMap(existing -> errorFromMessage("domain.conjunto.nombre.duplicated"))
+                                        .switchIfEmpty(Mono.defer(() -> {
+                                            final ConjuntoResidencial nuevo = mapper.toDomain(null, request, ciudad, admin);
+                                            return conjuntoRepository.save(nuevo);
+                                        }));
                             });
                 })
                 .map(mapper::toResponse)
+                .onErrorResume(ApplicationException.class, Mono::error)
                 .onErrorResume(Exception.class, ex -> {
-                    // Si ya es una ApplicationException o está envuelta, la dejamos pasar sin mapear
-                    Throwable cause = ex;
-                    while (cause != null) {
-                        if (cause instanceof ApplicationException) {
-                            return Mono.error(cause);
-                        }
-                        cause = cause.getCause();
-                    }
-                    LOGGER.error("Error inesperado en CreateConjuntoUseCase: {}", ex.getMessage());
-                    return messageClient.getMessage("domain.general.error")
-                            .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                                    "unexpected.error",
-                                    "Ocurrió un error inesperado. Intenta nuevamente.",
-                                    "backend-fallback")))
-                            .flatMap(msg -> Mono.error(new ApplicationException(msg.clientMessage(), msg.source())));
+                    LOGGER.error("Error inesperado en CreateConjuntoUseCase", ex);
+                    return errorFromMessage("domain.general.error");
                 });
     }
 
-    private Mono<ConjuntoResidencial> duplicateConjuntoError() {
-        return messageClient.getMessage("domain.conjunto.nombre.duplicated")
-                .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                        "Duplicate residential complex detected.",
-                        "Ya existe un conjunto residencial registrado con ese nombre.",
-                        "backend-default")))
-                .flatMap(msg -> {
-                    LOGGER.warn("Creación de conjunto duplicado. Technical='{}'", msg.technicalMessage());
-                    return Mono.error(new ApplicationException(msg.clientMessage(), msg.source()));
-                });
-    }
-
-    private Mono<ConjuntoResidencial> duplicateConjuntoTelefonoError() {
-        return messageClient.getMessage("domain.conjunto.telefono.duplicated")
-                .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
-                        "Duplicate residential complex detected (phone).",
-                        "Ya existe un conjunto residencial registrado con ese teléfono.",
-                        "backend-default")))
-                .flatMap(msg -> {
-                    LOGGER.warn("Creación de conjunto duplicado por teléfono. Technical='{}'", msg.technicalMessage());
-                    return Mono.error(new ApplicationException(msg.clientMessage(), msg.source()));
-                });
+    private <T> Mono<T> errorFromMessage(final String messageKey) {
+        return messageClient.getMessage(messageKey)
+                .switchIfEmpty(messageClient.getMessage("domain.general.error"))
+                .switchIfEmpty(Mono.error(new ApplicationException(
+                        "No fue posible obtener el mensaje de error solicitado.", "message-service")))
+                .flatMap(msg -> Mono.error(new ApplicationException(msg.clientMessage(), msg.source())));
     }
 }
