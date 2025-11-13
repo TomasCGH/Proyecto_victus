@@ -2,6 +2,7 @@ package co.edu.uco.backendvictus.infrastructure.primary.controller;
 
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +47,7 @@ public class ConjuntoResidencialController {
 
     @PostMapping
     public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> crear(
-            @RequestBody final ConjuntoCreateRequest request) {
+            @Valid @RequestBody final ConjuntoCreateRequest request) {
 
         final ConjuntoCreateRequest sanitized = new ConjuntoCreateRequest(request.ciudadId(), request.administradorId(),
                 DataSanitizer.sanitizeText(request.nombre()), DataSanitizer.sanitizeText(request.direccion()),
@@ -68,7 +69,7 @@ public class ConjuntoResidencialController {
     @PutMapping("/{id}")
     public Mono<ResponseEntity<ApiSuccessResponse<ConjuntoResponse>>> actualizar(
             @PathVariable("id") final UUID id,
-            @RequestBody final ConjuntoUpdateRequest request) {
+            @Valid @RequestBody final ConjuntoUpdateRequest request) {
 
         final ConjuntoUpdateRequest sanitized = new ConjuntoUpdateRequest(
                 id,

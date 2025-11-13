@@ -157,6 +157,19 @@ class ViviendaUseCaseTest {
             store.remove(id);
             return Mono.empty();
         }
+
+        @Override
+        public Mono<ConjuntoResidencial> findByCiudadAndNombre(final java.util.UUID ciudadId, final String nombre) {
+            return Flux.fromIterable(store.values())
+                    .filter(c -> c.getCiudad() != null && c.getCiudad().getId().equals(ciudadId) && c.getNombre().equals(nombre))
+                    .next();
+        }
+
+        @Override
+        public reactor.core.publisher.Flux<ConjuntoResidencial> findAllByTelefono(final String telefono) {
+            return Flux.fromIterable(store.values())
+                    .filter(c -> c.getTelefono() != null && c.getTelefono().equals(telefono));
+        }
     }
 
     private final class InMemoryViviendaRepository implements ViviendaRepository {

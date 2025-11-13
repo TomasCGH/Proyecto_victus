@@ -9,6 +9,8 @@ public class Message {
 
     private String key;
     private String value;
+    private String technicalMessage;
+    private String clientMessage;
 
     public Message() {
         // Constructor por defecto necesario para la deserialización reactiva.
@@ -17,6 +19,15 @@ public class Message {
     public Message(String key, String value) {
         setKey(key);
         setValue(value);
+        // Backward compatibility: store value as clientMessage
+        setClientMessage(value);
+    }
+
+    public Message(String key, String technicalMessage, String clientMessage) {
+        setKey(key);
+        setTechnicalMessage(technicalMessage);
+        setClientMessage(clientMessage);
+        setValue(clientMessage);
     }
 
     public String getKey() {
@@ -33,5 +44,21 @@ public class Message {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getTechnicalMessage() {
+        return technicalMessage;
+    }
+
+    public void setTechnicalMessage(String technicalMessage) {
+        this.technicalMessage = technicalMessage;
+    }
+
+    public String getClientMessage() {
+        return clientMessage;
+    }
+
+    public void setClientMessage(String clientMessage) {
+        this.clientMessage = clientMessage;
     }
 }

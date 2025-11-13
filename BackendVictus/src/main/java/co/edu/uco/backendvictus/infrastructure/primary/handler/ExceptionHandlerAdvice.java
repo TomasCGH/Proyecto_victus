@@ -2,6 +2,8 @@ package co.edu.uco.backendvictus.infrastructure.primary.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
@@ -10,19 +12,51 @@ import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.crosscutting.exception.DomainException;
 import co.edu.uco.backendvictus.crosscutting.exception.InfrastructureException;
 import co.edu.uco.backendvictus.crosscutting.helpers.LoggerHelper;
-import co.edu.uco.backendvictus.infrastructure.primary.response.ApiErrorResponse;
+import co.edu.uco.backendvictus.infrastructure.secondary.client.MessageClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.ObjectError;
+import java.time.OffsetDateTime;
 import reactor.core.publisher.Mono;
+import co.edu.uco.backendvictus.infrastructure.primary.response.ApiErrorResponse;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
 
     private static final org.slf4j.Logger LOGGER = LoggerHelper.getLogger(ExceptionHandlerAdvice.class);
 
+    private final MessageClient messageClient;
+
+    @Autowired
+    public ExceptionHandlerAdvice(final MessageClient messageClient) {
+        this.messageClient = messageClient;
+    }
+
     @ExceptionHandler(DomainException.class)
     public Mono<ResponseEntity<ApiErrorResponse>> handleDomainException(final DomainException exception,
             final ServerWebExchange exchange) {
         LOGGER.warn("Error de dominio: {}", exception.getMessage());
         return buildResponse(HttpStatus.BAD_REQUEST, "DOMAIN_ERROR", exception, exchange, "backend");
+    }
+
+    @ExceptionHandler(WebExchangeBindException.class)
+    public Mono<ResponseEntity<ApiErrorResponse>> handleValidationErrors(final WebExchangeBindException ex,
+            final ServerWebExchange exchange) {
+        final ServerHttpRequest request = exchange.getRequest();
+        final String messageKey = ex.getAllErrors().stream()
+                .findFirst()
+                .map(ObjectError::getDefaultMessage)
+                .orElse("validation.general");
+
+        return messageClient.getMessage(messageKey)
+                .switchIfEmpty(Mono.just(new MessageClient.MessageResult(
+                        ex.getMessage(),
+                        "Datos inválidos en el formulario.",
+                        "backend-fallback")))
+                .map(msg -> {
+                    final ApiErrorResponse response = new ApiErrorResponse(false, "APPLICATION_ERROR",
+                            msg.clientMessage(), msg.source(), request.getPath().value(), OffsetDateTime.now());
+                    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+                });
     }
 
     @ExceptionHandler(ApplicationException.class)

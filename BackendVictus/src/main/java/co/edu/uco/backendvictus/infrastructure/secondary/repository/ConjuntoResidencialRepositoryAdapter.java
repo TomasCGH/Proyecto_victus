@@ -32,7 +32,11 @@ public class ConjuntoResidencialRepositoryAdapter implements ConjuntoResidencial
 
     @Override
     public Mono<ConjuntoResidencial> save(final ConjuntoResidencial conjuntoResidencial) {
-        return repository.save(mapper.toEntity(conjuntoResidencial)).flatMap(this::toDomain);
+        return repository.save(mapper.toEntity(conjuntoResidencial))
+                .flatMap(this::toDomain)
+                .onErrorMap(org.springframework.dao.DataIntegrityViolationException.class,
+                        e -> new co.edu.uco.backendvictus.crosscutting.exception.ApplicationException(
+                                "El teléfono ya está registrado en otro conjunto residencial", "database-constraint"));
     }
 
     @Override
@@ -53,6 +57,12 @@ public class ConjuntoResidencialRepositoryAdapter implements ConjuntoResidencial
     @Override
     public Mono<ConjuntoResidencial> findByCiudadAndNombre(final UUID ciudadId, final String nombre) {
         return repository.findByCiudadIdAndNombre(ciudadId, nombre)
+                .flatMap(this::toDomain);
+    }
+
+    @Override
+    public Flux<ConjuntoResidencial> findAllByTelefono(final String telefono) {
+        return repository.findAllByTelefono(telefono)
                 .flatMap(this::toDomain);
     }
 

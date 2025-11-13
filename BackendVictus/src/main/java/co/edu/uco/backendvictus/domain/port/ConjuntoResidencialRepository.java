@@ -18,4 +18,7 @@ public interface ConjuntoResidencialRepository {
     Mono<Void> deleteById(UUID id);
 
     Mono<ConjuntoResidencial> findByCiudadAndNombre(UUID ciudadId, String nombre);
+
+    // Retorna todos los registros que coinciden con el teléfono para evitar IncorrectResultSizeDataAccessException
+    Flux<ConjuntoResidencial> findAllByTelefono(String telefono);
 }

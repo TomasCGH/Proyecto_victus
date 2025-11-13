@@ -39,9 +39,19 @@ public final class MessageCatalog {
 
         // Mensajes de dominio de conjunto
         register("domain.conjunto.nombre.duplicated", "Ya existe un conjunto residencial registrado con ese nombre en la ciudad.");
-        register("domain.conjunto.create.success", "El conjunto residencial fue creado correctamente.");
-        register("domain.conjunto.update.success", "La información del conjunto residencial fue actualizada correctamente.");
-        register("domain.conjunto.delete.success", "El conjunto residencial fue eliminado correctamente.");
+        // El mensaje contiene technicalMessage y clientMessage separados para integrarse con MessageClient
+        register("domain.conjunto.telefono.duplicated", "Duplicate phone detected in conjunto_residencial.", "Ya existe un conjunto residencial registrado con ese teléfono.");
+        register("domain.data.integrity", "Database integrity constraint violated.", "Los datos ingresados no son válidos o faltan referencias requeridas.");
+        register("domain.general.error", "Unexpected error in conjunto domain.", "Ocurrió un error inesperado. Intenta nuevamente.");
+        // Validación - claves utilizadas por las anotaciones jakarta.validation en DTOs
+        register("validation.required.nombre", "Name is required.", "El campo nombre es obligatorio.");
+        register("validation.required.telefono", "Phone is required.", "El campo teléfono es obligatorio.");
+        register("validation.required.ciudad", "City is required.", "Debes seleccionar una ciudad.");
+        register("validation.required.administrador", "Administrator is required.", "Debes seleccionar un administrador.");
+        register("validation.format.telefono", "Phone format invalid.", "El teléfono solo debe contener números.");
+        register("validation.maxlength.telefono", "Phone length exceeded.", "El teléfono no puede tener más de 10 dígitos.");
+        register("validation.minlength.nombre", "Name too short.", "El nombre debe tener al menos 3 caracteres.");
+        register("validation.required.uuid", "UUIDs missing.", "Debes seleccionar ciudad y administrador antes de continuar.");
 
         // Notificaciones (ejemplos orientativos para conjunto)
         register("notification.conjunto.creado",
@@ -92,5 +102,9 @@ public final class MessageCatalog {
 
     private static void register(final String key, final String value) {
         MESSAGES.put(key, new Message(key, value));
+    }
+
+    private static void register(final String key, final String technicalMessage, final String clientMessage) {
+        MESSAGES.put(key, new Message(key, technicalMessage, clientMessage));
     }
 }
