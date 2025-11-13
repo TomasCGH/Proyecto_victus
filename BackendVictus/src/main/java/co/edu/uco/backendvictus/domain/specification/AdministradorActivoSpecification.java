@@ -14,6 +14,6 @@ public final class AdministradorActivoSpecification implements Specification<Adm
 
     @Override
     public boolean isSatisfiedBy(final Administrador candidate) {
-        return candidate != null; // sin atributo 'activo', solo valida no null
+        return candidate != null;
     }
 }

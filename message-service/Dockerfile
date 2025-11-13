@@ -4,7 +4,6 @@
 # - Builder: usa Maven + Eclipse Temurin 21 para compilar sin tests (cache de dependencias)
 # - Runtime: imagen ligera basada en eclipse-temurin:21-jre-alpine
 # - Incluye el agente OpenTelemetry (OTel Java Agent) en /otel/otel-javaagent.jar
-# - Se conecta al Eureka Server desplegado en Render
 # ================================
 
 # ---------------------------
@@ -56,18 +55,10 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:8082/actuator/health || exit 1
 
 # ================================
-# Variables de entorno (modificables en Render)
+# Variables de entorno (modificables en contenedor)
 # ================================
 ENV SERVER_PORT=8082
 ENV SPRING_APPLICATION_NAME=message-service
-
-# 👇 CORREGIDO: Eureka público en Render
-ENV EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://eureka-server-eureka-server-latest.onrender.com/eureka/
-
-ENV EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-ENV MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus
-ENV MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED=true
-ENV MANAGEMENT_SERVER_PORT=8082
 
 # OpenTelemetry (monitoring opcional)
 ENV OTEL_SERVICE_NAME=message-service

@@ -71,8 +71,8 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                     return conjuntoRepository.findByCiudadAndNombre(ciudad.getId(), request.nombre())
                             .flatMap(existing -> messageClient.getMessage("domain.conjunto.nombre.duplicated")
                                     .flatMap(msg -> {
-                                        LOGGER.warn("Creación de conjunto duplicado. Mensaje='{}' (source={})", msg.message(), msg.source());
-                                        return Mono.<ConjuntoResidencial>error(new ApplicationException(msg.message(), msg.source()));
+                                        LOGGER.warn("Creación de conjunto duplicado. Technical='{}'", msg.technicalMessage());
+                                        return Mono.<ConjuntoResidencial>error(new ApplicationException(msg.clientMessage(), msg.source()));
                                     })
                             )
                             .switchIfEmpty(Mono.defer(() -> {

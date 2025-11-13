@@ -69,8 +69,8 @@ public class CreateViviendaUseCase implements UseCase<ViviendaCreateRequest, Viv
         return viviendaRepository.findByConjuntoAndNumero(conjunto.getId(), vivienda.getNumero())
                 .flatMap(existing -> messageClient.getMessage("domain.vivienda.numero.duplicated")
                         .flatMap(msg -> {
-                            LOGGER.warn("Creación de vivienda duplicada detectada. Mensaje='{}' (source={})", msg.message(), msg.source());
-                            return Mono.<Vivienda>error(new ApplicationException(msg.message(), msg.source()));
+                            LOGGER.warn("Creación de vivienda duplicada detectada. Technical='{}'", msg.technicalMessage());
+                            return Mono.<Vivienda>error(new ApplicationException(msg.clientMessage(), msg.source()));
                         })
                 )
                 .switchIfEmpty(Mono.just(vivienda));

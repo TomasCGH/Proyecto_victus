@@ -9,12 +9,6 @@ services:
       SPRING_APPLICATION_NAME: "parameters-service"
       SERVER_PORT: "8081"
 
-      # ---- Eureka (Render)  👈 importante el sufijo /eureka
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "https://eureka-server-eureka-server-latest.onrender.com/eureka"
-      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
-      EUREKA_CLIENT_FETCH_REGISTRY: "true"
-      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
-
       # ---- DB (servicio local 'db')
       DATABASE_HOST: "db"
       DATABASE_PORT: "5432"

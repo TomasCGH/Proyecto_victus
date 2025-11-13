@@ -35,32 +35,21 @@
         </dependencyManagement>
 
         <dependencies>
-                <!-- Web MVC -->
+                <!-- WebFlux reactivo -->
                 <dependency>
                         <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-web</artifactId>
+                        <artifactId>spring-boot-starter-webflux</artifactId>
                 </dependency>
 
-                <!-- Eureka Client -->
-                <dependency>
-                        <groupId>org.springframework.cloud</groupId>
-                        <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-                </dependency>
-
-                <!-- Tracing (Micrometer + OTLP) -->
-                <!-- 🔹 SPRING BOOT ACTUATOR PARA MÉTRICAS -->
+                <!-- Tracing (Micrometer + OTLP) / Actuator y Prometheus -->
                 <dependency>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-starter-actuator</artifactId>
                 </dependency>
-
-                <!-- 🔹 MICROMETER - REGISTRO DE MÉTRICAS PARA PROMETHEUS -->
                 <dependency>
                         <groupId>io.micrometer</groupId>
                         <artifactId>micrometer-registry-prometheus</artifactId>
                 </dependency>
-
-
 
                 <!-- Tests -->
                 <dependency>
