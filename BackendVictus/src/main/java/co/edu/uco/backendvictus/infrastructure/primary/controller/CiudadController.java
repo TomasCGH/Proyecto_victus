@@ -26,7 +26,7 @@ import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelpe
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping({"/uco-challenge/api/v1/ciudades", "/api/v1/ciudades"})
+@RequestMapping("/uco-challenge/api/v1/ciudades")
 public class CiudadController {
 
     private final CreateCiudadUseCase createCiudadUseCase;

@@ -22,6 +22,10 @@ public interface ConjuntoRepositoryPort {
 
     Flux<ConjuntoResidencial> findAllWithNames();
 
+    Flux<ConjuntoResidencial> findAllWithNamesPaged(int page, int size);
+
+    Mono<Long> countAll();
+
     Flux<ConjuntoResidencial> findByDepartamentoId(UUID departamentoId);
 
     Flux<ConjuntoResidencial> findByCiudadId(UUID ciudadId);

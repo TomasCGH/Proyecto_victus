@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import co.edu.uco.backendvictus.application.dto.common.PageResponse;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoCreateRequest;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoEvento;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
@@ -75,14 +76,23 @@ public class ConjuntoResidencialController {
     }
 
     @GetMapping
-    public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<ConjuntoResponse>>>> listar(
+    public Mono<PageResponse<ConjuntoResponse>> listar(
             @RequestParam(name = "departamentoId", required = false) final UUID departamentoId,
             @RequestParam(name = "ciudadId", required = false) final UUID ciudadId,
-            @RequestParam(name = "nombre", required = false) final String nombre) {
-        return listConjuntosUseCase.executeFiltered(departamentoId, ciudadId, DataSanitizer.sanitizeText(nombre))
-                .collectList()
-                .map(ApiSuccessResponse::of)
-                .map(ResponseEntity::ok);
+            @RequestParam(name = "nombre", required = false) final String nombre,
+            @RequestParam(name = "page", defaultValue = "0") final int page,
+            @RequestParam(name = "size", defaultValue = "20") final int size) {
+        final String sanitizedNombre = DataSanitizer.sanitizeText(nombre);
+        final boolean hasFilters = departamentoId != null || ciudadId != null
+                || (sanitizedNombre != null && !sanitizedNombre.isBlank());
+
+        if (hasFilters) {
+            Flux<ConjuntoResponse> filtered = listConjuntosUseCase
+                    .executeFiltered(departamentoId, ciudadId, sanitizedNombre);
+            return listConjuntosUseCase.buildFilteredPage(filtered, page, size);
+        }
+
+        return listConjuntosUseCase.executePaged(page, size);
     }
 
     @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
