@@ -18,17 +18,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoCreateRequest;
+import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoEvento;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoUpdateRequest;
 import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaFilterRequest;
 import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaPageResponse;
 import co.edu.uco.backendvictus.application.usecase.conjunto.CreateConjuntoUseCase;
 import co.edu.uco.backendvictus.application.usecase.conjunto.DeleteConjuntoUseCase;
-import co.edu.uco.backendvictus.application.usecase.conjunto.ListConjuntoUseCase;
+import co.edu.uco.backendvictus.application.usecase.conjunto.ListConjuntosUseCase;
 import co.edu.uco.backendvictus.application.usecase.conjunto.UpdateConjuntoUseCase;
 import co.edu.uco.backendvictus.application.usecase.vivienda.ListViviendaUseCase;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoEventoPublisher;
 import co.edu.uco.backendvictus.crosscutting.helpers.DataSanitizer;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiSuccessResponse;
 import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelper; // ✅ import helper
@@ -40,20 +41,20 @@ import reactor.core.publisher.Mono;
 public class ConjuntoResidencialController {
 
     private final CreateConjuntoUseCase createConjuntoUseCase;
-    private final ListConjuntoUseCase listConjuntoUseCase;
+    private final ListConjuntosUseCase listConjuntosUseCase;
     private final UpdateConjuntoUseCase updateConjuntoUseCase;
     private final DeleteConjuntoUseCase deleteConjuntoUseCase;
     private final ConjuntoEventoPublisher eventoPublisher;
     private final ListViviendaUseCase listViviendaUseCase;
 
     public ConjuntoResidencialController(final CreateConjuntoUseCase createConjuntoUseCase,
-                                         final ListConjuntoUseCase listConjuntoUseCase,
+                                         final ListConjuntosUseCase listConjuntoUseCase,
                                          final UpdateConjuntoUseCase updateConjuntoUseCase,
                                          final DeleteConjuntoUseCase deleteConjuntoUseCase,
                                          final ConjuntoEventoPublisher eventoPublisher,
                                          final ListViviendaUseCase listViviendaUseCase) {
         this.createConjuntoUseCase = createConjuntoUseCase;
-        this.listConjuntoUseCase = listConjuntoUseCase;
+        this.listConjuntosUseCase = listConjuntoUseCase;
         this.updateConjuntoUseCase = updateConjuntoUseCase;
         this.deleteConjuntoUseCase = deleteConjuntoUseCase;
         this.eventoPublisher = eventoPublisher;
@@ -76,23 +77,24 @@ public class ConjuntoResidencialController {
     @GetMapping
     public Mono<ResponseEntity<ApiSuccessResponse<java.util.List<ConjuntoResponse>>>> listar(
             @RequestParam(name = "departamentoId", required = false) final UUID departamentoId,
-            @RequestParam(name = "ciudadId", required = false) final UUID ciudadId) {
-        return listConjuntoUseCase.executeFiltered(departamentoId, ciudadId)
+            @RequestParam(name = "ciudadId", required = false) final UUID ciudadId,
+            @RequestParam(name = "nombre", required = false) final String nombre) {
+        return listConjuntosUseCase.executeFiltered(departamentoId, ciudadId, DataSanitizer.sanitizeText(nombre))
                 .collectList()
                 .map(ApiSuccessResponse::of)
                 .map(ResponseEntity::ok);
     }
 
     @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Flux<ServerSentEvent<ConjuntoEventoPublisher.Evento>>> streamEventos() {
+    public ResponseEntity<Flux<ServerSentEvent<ConjuntoEvento>>> streamEventos() {
         HttpHeaders headers = new HttpHeaders();
         headers.setCacheControl("no-cache");
         headers.add("X-Accel-Buffering", "no");
         headers.add("Connection", "keep-alive");
 
-        Flux<ServerSentEvent<ConjuntoEventoPublisher.Evento>> body = eventoPublisher.stream()
-                .map(evento -> ServerSentEvent.<ConjuntoEventoPublisher.Evento>builder()
-                        .event(evento.tipo().name())
+        Flux<ServerSentEvent<ConjuntoEvento>> body = eventoPublisher.stream()
+                .map(evento -> ServerSentEvent.<ConjuntoEvento>builder()
+                        .event(evento.tipo())
                         .data(evento)
                         .build());
 

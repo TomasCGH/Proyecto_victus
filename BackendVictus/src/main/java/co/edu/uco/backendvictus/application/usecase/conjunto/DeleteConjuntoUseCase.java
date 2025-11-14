@@ -6,18 +6,20 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
 
-import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
-import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
-import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher;
+import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoEvento;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoEventoPublisher;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoRepositoryPort;
+import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 
 @Service
 public class DeleteConjuntoUseCase {
 
-    private final ConjuntoResidencialRepository conjuntoRepository;
+    private final ConjuntoRepositoryPort conjuntoRepository;
     private final ConjuntoEventoPublisher eventoPublisher;
 
-    public DeleteConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository, final ConjuntoEventoPublisher eventoPublisher) {
+    public DeleteConjuntoUseCase(final ConjuntoRepositoryPort conjuntoRepository,
+            final ConjuntoEventoPublisher eventoPublisher) {
         this.conjuntoRepository = conjuntoRepository;
         this.eventoPublisher = eventoPublisher;
     }
@@ -26,12 +28,12 @@ public class DeleteConjuntoUseCase {
         return conjuntoRepository.findById(id)
                 .switchIfEmpty(Mono.error(new ApplicationException("Conjunto residencial no encontrado")))
                 .flatMap(conjunto -> {
-                    if (eventoPublisher != null) {
-                        ConjuntoResponse payload = new ConjuntoResponse(conjunto.getId(), conjunto.getCiudad().getId(), conjunto.getAdministrador().getId(), conjunto.getNombre(), conjunto.getDireccion(), conjunto.getTelefono(), conjunto.getCiudad().getNombre(), conjunto.getCiudad().getDepartamento().getNombre());
-                        return eventoPublisher.publish(new ConjuntoEventoPublisher.Evento(ConjuntoEventoPublisher.TipoEvento.DELETED, payload))
-                                .then(conjuntoRepository.deleteById(id));
-                    }
-                    return conjuntoRepository.deleteById(id);
+                    ConjuntoResponse payload = new ConjuntoResponse(conjunto.getId(), conjunto.getCiudad().getId(),
+                            conjunto.getAdministrador().getId(), conjunto.getNombre(), conjunto.getDireccion(),
+                            conjunto.getTelefono(), conjunto.getCiudad().getNombre(),
+                            conjunto.getCiudad().getDepartamento().getNombre());
+                    return eventoPublisher.publish(new ConjuntoEvento("DELETED", payload))
+                            .then(conjuntoRepository.deleteById(id));
                 });
     }
 }

@@ -7,22 +7,22 @@ import reactor.core.publisher.Mono;
 import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaResponse;
 import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaUpdateRequest;
 import co.edu.uco.backendvictus.application.mapper.ViviendaApplicationMapper;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoRepositoryPort;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
-import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.model.Vivienda;
-import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
+import co.edu.uco.backendvictus.domain.model.conjunto.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.port.ViviendaRepository;
 
 @Service
 public class UpdateViviendaUseCase implements UseCase<ViviendaUpdateRequest, ViviendaResponse> {
 
     private final ViviendaRepository viviendaRepository;
-    private final ConjuntoResidencialRepository conjuntoRepository;
+    private final ConjuntoRepositoryPort conjuntoRepository;
     private final ViviendaApplicationMapper mapper;
 
     public UpdateViviendaUseCase(final ViviendaRepository viviendaRepository,
-            final ConjuntoResidencialRepository conjuntoRepository, final ViviendaApplicationMapper mapper) {
+            final ConjuntoRepositoryPort conjuntoRepository, final ViviendaApplicationMapper mapper) {
         this.viviendaRepository = viviendaRepository;
         this.conjuntoRepository = conjuntoRepository;
         this.mapper = mapper;

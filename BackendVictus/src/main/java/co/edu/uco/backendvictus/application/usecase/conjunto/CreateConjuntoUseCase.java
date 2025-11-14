@@ -6,20 +6,23 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoCreateRequest;
+import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoEvento;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
-import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoEventoPublisher;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoRepositoryPort;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.crosscutting.helpers.LoggerHelper;
 
 import co.edu.uco.backendvictus.domain.model.Administrador;
 import co.edu.uco.backendvictus.domain.model.Ciudad;
-import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
+import co.edu.uco.backendvictus.domain.model.conjunto.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.port.AdministradorRepository;
 import co.edu.uco.backendvictus.domain.port.CiudadRepository;
-import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
 import co.edu.uco.backendvictus.infrastructure.secondary.client.MessageClient;
 import co.edu.uco.backendvictus.infrastructure.secondary.client.ParameterClient;
 
@@ -28,7 +31,7 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
 
     private static final Logger LOGGER = LoggerHelper.getLogger(CreateConjuntoUseCase.class);
 
-    private final ConjuntoResidencialRepository conjuntoRepository;
+    private final ConjuntoRepositoryPort conjuntoRepository;
     private final CiudadRepository ciudadRepository;
     private final AdministradorRepository administradorRepository;
     private final ConjuntoApplicationMapper mapper;
@@ -36,14 +39,8 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
     private final ParameterClient parameterClient;
     private final ConjuntoEventoPublisher eventoPublisher;
 
-    public CreateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
-            final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
-            final ConjuntoApplicationMapper mapper) {
-        this(conjuntoRepository, ciudadRepository, administradorRepository, mapper, MessageClient.fallback(), ParameterClient.fallback(), null);
-    }
-
     @Autowired
-    public CreateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
+    public CreateConjuntoUseCase(final ConjuntoRepositoryPort conjuntoRepository,
             final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
             final ConjuntoApplicationMapper mapper, final MessageClient messageClient,
             final ParameterClient parameterClient, final ConjuntoEventoPublisher eventoPublisher) {
@@ -99,19 +96,14 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                                 return conjuntoRepository.findByCiudadAndNombre(ciudad.getId(), request.nombre())
                                         .flatMap(existing -> this.<ConjuntoResidencial>errorFromMessage("domain.conjunto.nombre.duplicated"))
                                         .switchIfEmpty(Mono.defer(() -> {
-                                            final ConjuntoResidencial nuevo = mapper.toDomain(null, request, ciudad, admin);
+                                            final ConjuntoResidencial nuevo = mapper.toDomain(UUID.randomUUID(), request, ciudad,
+                                                    admin);
                                             return conjuntoRepository.save(nuevo);
                                         }));
                             });
                 })
                 .map(mapper::toResponse)
-                .flatMap(resp -> {
-                    if (eventoPublisher != null) {
-                        return eventoPublisher.publish(new ConjuntoEventoPublisher.Evento(ConjuntoEventoPublisher.TipoEvento.CREATED, resp))
-                                .thenReturn(resp);
-                    }
-                    return Mono.just(resp);
-                })
+                .flatMap(resp -> eventoPublisher.publish(new ConjuntoEvento("CREATED", resp)).thenReturn(resp))
                 .onErrorResume(ApplicationException.class, Mono::error)
                 .onErrorResume(Exception.class, ex -> {
                     Throwable cause = ex;

@@ -17,11 +17,11 @@ import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaFilterRequest;
 import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaUpdateRequest;
 import co.edu.uco.backendvictus.application.mapper.ViviendaApplicationMapper;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
-import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
+import co.edu.uco.backendvictus.domain.model.conjunto.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.model.Vivienda;
 import co.edu.uco.backendvictus.domain.model.ViviendaEstado;
 import co.edu.uco.backendvictus.domain.model.ViviendaTipo;
-import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoRepositoryPort;
 import co.edu.uco.backendvictus.domain.port.ViviendaRepository;
 import co.edu.uco.backendvictus.seeds.ViviendaFactory;
 import reactor.core.publisher.Flux;
@@ -31,7 +31,7 @@ import reactor.test.StepVerifier;
 class ViviendaUseCaseTest {
 
     private ViviendaRepository viviendaRepository;
-    private ConjuntoResidencialRepository conjuntoRepository;
+    private ConjuntoRepositoryPort conjuntoRepository;
     private ViviendaApplicationMapper mapper;
     private ConjuntoResidencial conjunto;
 
@@ -128,7 +128,7 @@ class ViviendaUseCaseTest {
                 .verifyComplete();
     }
 
-    private static final class InMemoryConjuntoRepository implements ConjuntoResidencialRepository {
+    private static final class InMemoryConjuntoRepository implements ConjuntoRepositoryPort {
 
         private final Map<UUID, ConjuntoResidencial> store = new ConcurrentHashMap<>();
 
@@ -166,9 +166,21 @@ class ViviendaUseCaseTest {
         }
 
         @Override
-        public reactor.core.publisher.Flux<ConjuntoResidencial> findAllByTelefono(final String telefono) {
+        public Flux<ConjuntoResidencial> findAllByTelefono(final String telefono) {
             return Flux.fromIterable(store.values())
                     .filter(c -> c.getTelefono() != null && c.getTelefono().equals(telefono));
+        }
+
+        @Override
+        public Flux<ConjuntoResidencial> findAllWithNames() {
+            return Flux.fromIterable(store.values());
+        }
+
+        @Override
+        public Flux<ConjuntoResidencial> findByDepartamentoId(final UUID departamentoId) {
+            return Flux.fromIterable(store.values())
+                    .filter(c -> c.getCiudad() != null && c.getCiudad().getDepartamento() != null
+                            && c.getCiudad().getDepartamento().getId().equals(departamentoId));
         }
 
         @Override
@@ -178,16 +190,17 @@ class ViviendaUseCaseTest {
         }
 
         @Override
-        public Flux<ConjuntoResidencial> findByDepartamentoId(final UUID departamentoId) {
+        public Flux<ConjuntoResidencial> findByDepartamentoIdAndCiudadId(final UUID departamentoId, final UUID ciudadId) {
             return Flux.fromIterable(store.values())
-                    .filter(c -> c.getCiudad() != null && c.getCiudad().getDepartamento() != null && c.getCiudad().getDepartamento().getId().equals(departamentoId));
+                    .filter(c -> c.getCiudad() != null && c.getCiudad().getDepartamento() != null
+                            && c.getCiudad().getDepartamento().getId().equals(departamentoId)
+                            && c.getCiudad().getId().equals(ciudadId));
         }
 
         @Override
-        public Flux<ConjuntoResidencial> findByCiudadIdAndDepartamentoId(final UUID ciudadId, final UUID departamentoId) {
+        public Flux<ConjuntoResidencial> findByNombre(final String nombre) {
             return Flux.fromIterable(store.values())
-                    .filter(c -> c.getCiudad() != null && c.getCiudad().getId().equals(ciudadId)
-                            && c.getCiudad().getDepartamento() != null && c.getCiudad().getDepartamento().getId().equals(departamentoId));
+                    .filter(c -> c.getNombre().toLowerCase().contains(nombre.toLowerCase()));
         }
     }
 

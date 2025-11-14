@@ -4,31 +4,30 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
 
+import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoEvento;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoUpdateRequest;
 import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
-import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher;
-import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher.Evento;
-import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher.TipoEvento;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoEventoPublisher;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoRepositoryPort;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.domain.model.Administrador;
 import co.edu.uco.backendvictus.domain.model.Ciudad;
-import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
+import co.edu.uco.backendvictus.domain.model.conjunto.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.port.AdministradorRepository;
 import co.edu.uco.backendvictus.domain.port.CiudadRepository;
-import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
 
 @Service
 public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, ConjuntoResponse> {
 
-    private final ConjuntoResidencialRepository conjuntoRepository;
+    private final ConjuntoRepositoryPort conjuntoRepository;
     private final CiudadRepository ciudadRepository;
     private final AdministradorRepository administradorRepository;
     private final ConjuntoApplicationMapper mapper;
     private final ConjuntoEventoPublisher eventoPublisher;
 
-    public UpdateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
+    public UpdateConjuntoUseCase(final ConjuntoRepositoryPort conjuntoRepository,
             final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
             final ConjuntoApplicationMapper mapper, final ConjuntoEventoPublisher eventoPublisher) {
         this.conjuntoRepository = conjuntoRepository;
@@ -51,8 +50,6 @@ public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, Con
                         request.telefono())))
                 .flatMap(conjuntoRepository::save)
                 .map(mapper::toResponse)
-                .flatMap(resp -> eventoPublisher != null
-                        ? eventoPublisher.publish(new Evento(TipoEvento.UPDATED, resp)).thenReturn(resp)
-                        : Mono.just(resp));
+                .flatMap(resp -> eventoPublisher.publish(new ConjuntoEvento("UPDATED", resp)).thenReturn(resp));
     }
 }
