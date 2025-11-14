@@ -57,23 +57,23 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
     public Mono<ConjuntoResponse> execute(final ConjuntoCreateRequest request) {
 
         if (request.ciudadId() == null || request.administradorId() == null) {
-            return errorFromMessage("validation.required.uuid");
+            return this.<ConjuntoResponse>errorFromMessage("validation.required.uuid");
         }
 
         if (request.telefono() == null || request.telefono().isBlank()) {
-            return errorFromMessage("validation.required.telefono");
+            return this.<ConjuntoResponse>errorFromMessage("validation.required.telefono");
         }
 
         if (!request.telefono().matches("^[0-9]+$")) {
-            return errorFromMessage("validation.format.telefono");
+            return this.<ConjuntoResponse>errorFromMessage("validation.format.telefono");
         }
 
         if (request.telefono().length() < 7 || request.telefono().length() > 10) {
-            return errorFromMessage("validation.length.telefono");
+            return this.<ConjuntoResponse>errorFromMessage("validation.length.telefono");
         }
 
         if (request.direccion() == null || request.direccion().isBlank()) {
-            return errorFromMessage("validation.required.direccion");
+            return this.<ConjuntoResponse>errorFromMessage("validation.required.direccion");
         }
 
         final Mono<Ciudad> ciudadMono = ciudadRepository.findById(request.ciudadId())
@@ -90,11 +90,11 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                             .collectList()
                             .flatMap(existentes -> {
                                 if (!existentes.isEmpty()) {
-                                    return errorFromMessage("domain.conjunto.telefono.duplicated");
+                                    return this.<ConjuntoResidencial>errorFromMessage("domain.conjunto.telefono.duplicated");
                                 }
 
                                 return conjuntoRepository.findByCiudadAndNombre(ciudad.getId(), request.nombre())
-                                        .flatMap(existing -> errorFromMessage("domain.conjunto.nombre.duplicated"))
+                                        .flatMap(existing -> this.<ConjuntoResidencial>errorFromMessage("domain.conjunto.nombre.duplicated"))
                                         .switchIfEmpty(Mono.defer(() -> {
                                             final ConjuntoResidencial nuevo = mapper.toDomain(null, request, ciudad, admin);
                                             return conjuntoRepository.save(nuevo);
@@ -104,8 +104,16 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                 .map(mapper::toResponse)
                 .onErrorResume(ApplicationException.class, Mono::error)
                 .onErrorResume(Exception.class, ex -> {
-                    LOGGER.error("Error inesperado en CreateConjuntoUseCase", ex);
-                    return errorFromMessage("domain.general.error");
+                    // Si ya es una ApplicationException o está envuelta, la dejamos pasar sin mapear
+                    Throwable cause = ex;
+                    while (cause != null) {
+                        if (cause instanceof ApplicationException) {
+                            return Mono.error(cause);
+                        }
+                        cause = cause.getCause();
+                    }
+                    LOGGER.error("Error inesperado en CreateConjuntoUseCase: {}", ex.getMessage());
+                    return this.<ConjuntoResponse>errorFromMessage("domain.general.error");
                 });
     }
 

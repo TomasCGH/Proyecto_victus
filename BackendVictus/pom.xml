@@ -7,7 +7,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <!-- Downgraded Spring Boot to 3.2.6 for compatibility with Spring Cloud Azure 5.x series used here.
+             Justification: Spring Cloud Azure 5.x expects Spring Boot 3.0-3.2 in tested compatibility matrix;
+             the previous Boot 3.5.6 produced NoClassDefFoundError for TaskExecutorBuilder during Azure auto-config.
+             Using 3.2.x ensures stable, tested compatibility with the chosen Spring Cloud Azure starter. -->
+        <version>3.2.6</version>
         <relativePath/>
     </parent>
 
@@ -21,7 +25,22 @@
         <java.version>21</java.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <lombok.version>1.18.34</lombok.version>
+        <!-- Pick Spring Cloud Azure version compatible with Spring Boot 3.2.x -->
+        <spring-cloud-azure.version>5.6.0</spring-cloud-azure.version>
     </properties>
+
+    <!-- Importar BOM de Spring Cloud Azure para gestionar versiones compatibles -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>${spring-cloud-azure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Reactive stack -->
@@ -44,10 +63,9 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>r2dbc-postgresql</artifactId>
-            <!-- Sin versión: la gestiona Spring Boot -->
         </dependency>
 
-        <!-- JDBC driver (opcional, solo si usas tooling que requiera JDBC) -->
+        <!-- JDBC driver (runtime) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -90,6 +108,19 @@
             <version>4.12.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Spring Cloud Azure Key Vault Starter (managed by BOM) -->
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-keyvault-secrets</artifactId>
+        </dependency>
+
+        <!-- Azure Identity to obtain tokens for Key Vault (we use DefaultAzureCredential) -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
