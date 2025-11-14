@@ -7,6 +7,9 @@ import reactor.core.publisher.Mono;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoUpdateRequest;
 import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
+import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher;
+import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher.Evento;
+import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher.TipoEvento;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.domain.model.Administrador;
@@ -23,14 +26,16 @@ public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, Con
     private final CiudadRepository ciudadRepository;
     private final AdministradorRepository administradorRepository;
     private final ConjuntoApplicationMapper mapper;
+    private final ConjuntoEventoPublisher eventoPublisher;
 
     public UpdateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
             final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
-            final ConjuntoApplicationMapper mapper) {
+            final ConjuntoApplicationMapper mapper, final ConjuntoEventoPublisher eventoPublisher) {
         this.conjuntoRepository = conjuntoRepository;
         this.ciudadRepository = ciudadRepository;
         this.administradorRepository = administradorRepository;
         this.mapper = mapper;
+        this.eventoPublisher = eventoPublisher;
     }
 
     @Override
@@ -45,6 +50,9 @@ public class UpdateConjuntoUseCase implements UseCase<ConjuntoUpdateRequest, Con
                 ).map(tuple -> existente.update(request.nombre(), request.direccion(), tuple.getT1(), tuple.getT2(),
                         request.telefono())))
                 .flatMap(conjuntoRepository::save)
-                .map(mapper::toResponse);
+                .map(mapper::toResponse)
+                .flatMap(resp -> eventoPublisher != null
+                        ? eventoPublisher.publish(new Evento(TipoEvento.UPDATED, resp)).thenReturn(resp)
+                        : Mono.just(resp));
     }
 }

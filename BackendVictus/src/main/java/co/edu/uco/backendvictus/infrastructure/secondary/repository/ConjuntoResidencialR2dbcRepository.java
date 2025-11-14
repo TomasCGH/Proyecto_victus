@@ -17,4 +17,15 @@ public interface ConjuntoResidencialR2dbcRepository
 
     @Query("SELECT * FROM conjunto_residencial WHERE telefono = :telefono")
     Flux<ConjuntoResidencialEntity> findAllByTelefono(@Param("telefono") String telefono);
+
+    // Filtrar por ciudad directamente
+    Flux<ConjuntoResidencialEntity> findByCiudadId(UUID ciudadId);
+
+    // Filtrar por departamento (requiere join ciudad -> departamento). Usamos query manual.
+    @Query("SELECT cr.* FROM conjunto_residencial cr JOIN ciudad c ON cr.ciudad_id = c.id WHERE c.departamento_id = :departamentoId")
+    Flux<ConjuntoResidencialEntity> findByDepartamentoId(@Param("departamentoId") UUID departamentoId);
+
+    // Filtrar por ciudad y departamento para validar ambos.
+    @Query("SELECT cr.* FROM conjunto_residencial cr JOIN ciudad c ON cr.ciudad_id = c.id WHERE c.id = :ciudadId AND c.departamento_id = :departamentoId")
+    Flux<ConjuntoResidencialEntity> findByCiudadIdAndDepartamentoId(@Param("ciudadId") UUID ciudadId, @Param("departamentoId") UUID departamentoId);
 }

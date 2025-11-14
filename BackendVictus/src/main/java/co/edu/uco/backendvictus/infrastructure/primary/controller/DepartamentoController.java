@@ -26,7 +26,7 @@ import co.edu.uco.backendvictus.infrastructure.primary.response.ApiResponseHelpe
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/uco-challenge/api/v1/departamentos")
+@RequestMapping({"/uco-challenge/api/v1/departamentos", "/api/v1/departamentos"})
 public class DepartamentoController {
 
     private final CreateDepartamentoUseCase createDepartamentoUseCase;

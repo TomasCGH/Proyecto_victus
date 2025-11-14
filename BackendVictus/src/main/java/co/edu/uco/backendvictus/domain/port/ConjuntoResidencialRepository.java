@@ -21,4 +21,11 @@ public interface ConjuntoResidencialRepository {
 
     // Retorna todos los registros que coinciden con el teléfono para evitar IncorrectResultSizeDataAccessException
     Flux<ConjuntoResidencial> findAllByTelefono(String telefono);
+
+    // Nuevos métodos de filtrado
+    Flux<ConjuntoResidencial> findByCiudadId(UUID ciudadId);
+
+    Flux<ConjuntoResidencial> findByDepartamentoId(UUID departamentoId);
+
+    Flux<ConjuntoResidencial> findByCiudadIdAndDepartamentoId(UUID ciudadId, UUID departamentoId);
 }

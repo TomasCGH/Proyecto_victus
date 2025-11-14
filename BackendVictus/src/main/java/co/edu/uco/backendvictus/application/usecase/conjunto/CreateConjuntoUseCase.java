@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoCreateRequest;
 import co.edu.uco.backendvictus.application.dto.conjunto.ConjuntoResponse;
 import co.edu.uco.backendvictus.application.mapper.ConjuntoApplicationMapper;
+import co.edu.uco.backendvictus.application.port.ConjuntoEventoPublisher;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.crosscutting.helpers.LoggerHelper;
@@ -33,24 +34,26 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
     private final ConjuntoApplicationMapper mapper;
     private final MessageClient messageClient;
     private final ParameterClient parameterClient;
+    private final ConjuntoEventoPublisher eventoPublisher;
 
     public CreateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
             final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
             final ConjuntoApplicationMapper mapper) {
-        this(conjuntoRepository, ciudadRepository, administradorRepository, mapper, MessageClient.fallback(), ParameterClient.fallback());
+        this(conjuntoRepository, ciudadRepository, administradorRepository, mapper, MessageClient.fallback(), ParameterClient.fallback(), null);
     }
 
     @Autowired
     public CreateConjuntoUseCase(final ConjuntoResidencialRepository conjuntoRepository,
             final CiudadRepository ciudadRepository, final AdministradorRepository administradorRepository,
             final ConjuntoApplicationMapper mapper, final MessageClient messageClient,
-            final ParameterClient parameterClient) {
+            final ParameterClient parameterClient, final ConjuntoEventoPublisher eventoPublisher) {
         this.conjuntoRepository = conjuntoRepository;
         this.ciudadRepository = ciudadRepository;
         this.administradorRepository = administradorRepository;
         this.mapper = mapper;
         this.messageClient = messageClient;
         this.parameterClient = parameterClient;
+        this.eventoPublisher = eventoPublisher;
     }
 
     @Override
@@ -102,9 +105,15 @@ public class CreateConjuntoUseCase implements UseCase<ConjuntoCreateRequest, Con
                             });
                 })
                 .map(mapper::toResponse)
+                .flatMap(resp -> {
+                    if (eventoPublisher != null) {
+                        return eventoPublisher.publish(new ConjuntoEventoPublisher.Evento(ConjuntoEventoPublisher.TipoEvento.CREATED, resp))
+                                .thenReturn(resp);
+                    }
+                    return Mono.just(resp);
+                })
                 .onErrorResume(ApplicationException.class, Mono::error)
                 .onErrorResume(Exception.class, ex -> {
-                    // Si ya es una ApplicationException o está envuelta, la dejamos pasar sin mapear
                     Throwable cause = ex;
                     while (cause != null) {
                         if (cause instanceof ApplicationException) {

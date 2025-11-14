@@ -66,6 +66,21 @@ public class ConjuntoResidencialRepositoryAdapter implements ConjuntoResidencial
                 .flatMap(this::toDomain);
     }
 
+    @Override
+    public Flux<ConjuntoResidencial> findByCiudadId(final UUID ciudadId) {
+        return repository.findByCiudadId(ciudadId).flatMap(this::toDomain);
+    }
+
+    @Override
+    public Flux<ConjuntoResidencial> findByDepartamentoId(final UUID departamentoId) {
+        return repository.findByDepartamentoId(departamentoId).flatMap(this::toDomain);
+    }
+
+    @Override
+    public Flux<ConjuntoResidencial> findByCiudadIdAndDepartamentoId(final UUID ciudadId, final UUID departamentoId) {
+        return repository.findByCiudadIdAndDepartamentoId(ciudadId, departamentoId).flatMap(this::toDomain);
+    }
+
     private Mono<ConjuntoResidencial> toDomain(final ConjuntoResidencialEntity entity) {
         final Mono<co.edu.uco.backendvictus.domain.model.Ciudad> ciudadMono = ciudadRepository
                 .findById(entity.getCiudadId());

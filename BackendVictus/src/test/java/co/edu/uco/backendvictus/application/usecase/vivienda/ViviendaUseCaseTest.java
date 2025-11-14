@@ -170,6 +170,25 @@ class ViviendaUseCaseTest {
             return Flux.fromIterable(store.values())
                     .filter(c -> c.getTelefono() != null && c.getTelefono().equals(telefono));
         }
+
+        @Override
+        public Flux<ConjuntoResidencial> findByCiudadId(final UUID ciudadId) {
+            return Flux.fromIterable(store.values())
+                    .filter(c -> c.getCiudad() != null && c.getCiudad().getId().equals(ciudadId));
+        }
+
+        @Override
+        public Flux<ConjuntoResidencial> findByDepartamentoId(final UUID departamentoId) {
+            return Flux.fromIterable(store.values())
+                    .filter(c -> c.getCiudad() != null && c.getCiudad().getDepartamento() != null && c.getCiudad().getDepartamento().getId().equals(departamentoId));
+        }
+
+        @Override
+        public Flux<ConjuntoResidencial> findByCiudadIdAndDepartamentoId(final UUID ciudadId, final UUID departamentoId) {
+            return Flux.fromIterable(store.values())
+                    .filter(c -> c.getCiudad() != null && c.getCiudad().getId().equals(ciudadId)
+                            && c.getCiudad().getDepartamento() != null && c.getCiudad().getDepartamento().getId().equals(departamentoId));
+        }
     }
 
     private final class InMemoryViviendaRepository implements ViviendaRepository {
