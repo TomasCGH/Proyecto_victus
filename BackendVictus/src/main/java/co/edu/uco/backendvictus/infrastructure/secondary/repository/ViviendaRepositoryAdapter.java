@@ -4,11 +4,11 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoRepositoryPort;
 import co.edu.uco.backendvictus.domain.model.Vivienda;
 import co.edu.uco.backendvictus.domain.model.ViviendaEstado;
 import co.edu.uco.backendvictus.domain.model.ViviendaTipo;
-import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
+import co.edu.uco.backendvictus.domain.model.conjunto.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.port.ViviendaRepository;
 import co.edu.uco.backendvictus.infrastructure.secondary.entity.ViviendaEntity;
 import co.edu.uco.backendvictus.infrastructure.secondary.mapper.ViviendaEntityMapper;
@@ -20,10 +20,10 @@ public class ViviendaRepositoryAdapter implements ViviendaRepository {
 
     private final ViviendaR2dbcRepository repository;
     private final ViviendaEntityMapper mapper;
-    private final ConjuntoResidencialRepository conjuntoRepository;
+    private final ConjuntoRepositoryPort conjuntoRepository;
 
     public ViviendaRepositoryAdapter(final ViviendaR2dbcRepository repository, final ViviendaEntityMapper mapper,
-            final ConjuntoResidencialRepository conjuntoRepository) {
+            final ConjuntoRepositoryPort conjuntoRepository) {
         this.repository = repository;
         this.mapper = mapper;
         this.conjuntoRepository = conjuntoRepository;

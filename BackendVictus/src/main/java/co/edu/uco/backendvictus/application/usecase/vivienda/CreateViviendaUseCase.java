@@ -8,13 +8,12 @@ import reactor.core.publisher.Mono;
 import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaCreateRequest;
 import co.edu.uco.backendvictus.application.dto.vivienda.ViviendaResponse;
 import co.edu.uco.backendvictus.application.mapper.ViviendaApplicationMapper;
+import co.edu.uco.backendvictus.application.port.out.conjunto.ConjuntoRepositoryPort;
 import co.edu.uco.backendvictus.application.usecase.UseCase;
 import co.edu.uco.backendvictus.crosscutting.exception.ApplicationException;
 import co.edu.uco.backendvictus.crosscutting.helpers.LoggerHelper;
-import co.edu.uco.backendvictus.crosscutting.helpers.UuidGenerator;
-import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.model.Vivienda;
-import co.edu.uco.backendvictus.domain.port.ConjuntoResidencialRepository;
+import co.edu.uco.backendvictus.domain.model.conjunto.ConjuntoResidencial;
 import co.edu.uco.backendvictus.domain.port.ViviendaRepository;
 import co.edu.uco.backendvictus.infrastructure.secondary.client.MessageClient;
 import co.edu.uco.backendvictus.infrastructure.secondary.client.ParameterClient;
@@ -25,20 +24,20 @@ public class CreateViviendaUseCase implements UseCase<ViviendaCreateRequest, Viv
     private static final Logger LOGGER = LoggerHelper.getLogger(CreateViviendaUseCase.class);
 
     private final ViviendaRepository viviendaRepository;
-    private final ConjuntoResidencialRepository conjuntoRepository;
+    private final ConjuntoRepositoryPort conjuntoRepository;
     private final ViviendaApplicationMapper mapper;
     private final MessageClient messageClient;
     private final ParameterClient parameterClient;
 
     public CreateViviendaUseCase(final ViviendaRepository viviendaRepository,
-                                 final ConjuntoResidencialRepository conjuntoRepository,
+                                 final ConjuntoRepositoryPort conjuntoRepository,
                                  final ViviendaApplicationMapper mapper) {
         this(viviendaRepository, conjuntoRepository, mapper, MessageClient.fallback(), ParameterClient.fallback());
     }
 
     @Autowired
     public CreateViviendaUseCase(final ViviendaRepository viviendaRepository,
-            final ConjuntoResidencialRepository conjuntoRepository,
+            final ConjuntoRepositoryPort conjuntoRepository,
             final ViviendaApplicationMapper mapper,
             final MessageClient messageClient,
             final ParameterClient parameterClient) {

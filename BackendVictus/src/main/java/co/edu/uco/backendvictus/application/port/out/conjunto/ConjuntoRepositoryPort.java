@@ -1,13 +1,12 @@
-package co.edu.uco.backendvictus.domain.port;
+package co.edu.uco.backendvictus.application.port.out.conjunto;
 
 import java.util.UUID;
 
+import co.edu.uco.backendvictus.domain.model.conjunto.ConjuntoResidencial;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import co.edu.uco.backendvictus.domain.model.ConjuntoResidencial;
-
-public interface ConjuntoResidencialRepository {
+public interface ConjuntoRepositoryPort {
 
     Mono<ConjuntoResidencial> save(ConjuntoResidencial conjuntoResidencial);
 
@@ -19,13 +18,15 @@ public interface ConjuntoResidencialRepository {
 
     Mono<ConjuntoResidencial> findByCiudadAndNombre(UUID ciudadId, String nombre);
 
-    // Retorna todos los registros que coinciden con el teléfono para evitar IncorrectResultSizeDataAccessException
     Flux<ConjuntoResidencial> findAllByTelefono(String telefono);
 
-    // Nuevos métodos de filtrado
-    Flux<ConjuntoResidencial> findByCiudadId(UUID ciudadId);
+    Flux<ConjuntoResidencial> findAllWithNames();
 
     Flux<ConjuntoResidencial> findByDepartamentoId(UUID departamentoId);
 
-    Flux<ConjuntoResidencial> findByCiudadIdAndDepartamentoId(UUID ciudadId, UUID departamentoId);
+    Flux<ConjuntoResidencial> findByCiudadId(UUID ciudadId);
+
+    Flux<ConjuntoResidencial> findByDepartamentoIdAndCiudadId(UUID departamentoId, UUID ciudadId);
+
+    Flux<ConjuntoResidencial> findByNombre(String nombre);
 }

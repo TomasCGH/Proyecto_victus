@@ -1,4 +1,4 @@
-package co.edu.uco.backendvictus.infrastructure.secondary.repository;
+package co.edu.uco.backendvictus.infrastructure.secondary.repository.conjunto;
 
 import java.util.UUID;
 
@@ -10,8 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import co.edu.uco.backendvictus.infrastructure.secondary.entity.ConjuntoResidencialEntity;
 
-public interface ConjuntoResidencialR2dbcRepository
-        extends ReactiveCrudRepository<ConjuntoResidencialEntity, UUID> {
+public interface ConjuntoR2dbcRepository extends ReactiveCrudRepository<ConjuntoResidencialEntity, UUID> {
 
     Mono<ConjuntoResidencialEntity> findByCiudadIdAndNombre(UUID ciudadId, String nombre);
 

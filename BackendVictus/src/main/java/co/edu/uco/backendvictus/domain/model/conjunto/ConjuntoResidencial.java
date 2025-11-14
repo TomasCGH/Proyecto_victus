@@ -1,8 +1,10 @@
-package co.edu.uco.backendvictus.domain.model;
+package co.edu.uco.backendvictus.domain.model.conjunto;
 
 import java.util.UUID;
 
 import co.edu.uco.backendvictus.crosscutting.helpers.ValidationUtils;
+import co.edu.uco.backendvictus.domain.model.Administrador;
+import co.edu.uco.backendvictus.domain.model.Ciudad;
 import co.edu.uco.backendvictus.domain.specification.ConjuntoAdministradorActivoSpecification;
 import co.edu.uco.backendvictus.domain.specification.ConjuntoTieneCiudadSpecification;
 import co.edu.uco.backendvictus.domain.specification.SpecificationValidator;
