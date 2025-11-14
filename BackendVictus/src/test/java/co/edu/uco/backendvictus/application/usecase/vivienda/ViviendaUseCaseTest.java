@@ -177,6 +177,18 @@ class ViviendaUseCaseTest {
         }
 
         @Override
+        public Flux<ConjuntoResidencial> findAllWithNamesPaged(final int page, final int size) {
+            return findAllWithNames()
+                    .skip((long) Math.max(page, 0) * Math.max(1, size))
+                    .take(Math.max(1, size));
+        }
+
+        @Override
+        public Mono<Long> countAll() {
+            return Mono.just((long) store.size());
+        }
+
+        @Override
         public Flux<ConjuntoResidencial> findByDepartamentoId(final UUID departamentoId) {
             return Flux.fromIterable(store.values())
                     .filter(c -> c.getCiudad() != null && c.getCiudad().getDepartamento() != null

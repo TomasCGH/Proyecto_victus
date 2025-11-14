@@ -107,6 +107,21 @@ public class ConjuntoRepositoryAdapter implements ConjuntoRepositoryPort {
     }
 
     @Override
+    public Flux<ConjuntoResidencial> findAllWithNamesPaged(final int page, final int size) {
+        final int sanitizedPage = Math.max(page, 0);
+        final int sanitizedSize = Math.max(1, size);
+        Map<String, Object> params = new HashMap<>();
+        params.put("limit", sanitizedSize);
+        params.put("offset", sanitizedPage * sanitizedSize);
+        return queryConjuntos(BASE_SELECT + " ORDER BY c.nombre LIMIT :limit OFFSET :offset", params);
+    }
+
+    @Override
+    public Mono<Long> countAll() {
+        return repository.count();
+    }
+
+    @Override
     public Flux<ConjuntoResidencial> findByDepartamentoId(final UUID departamentoId) {
         return queryConjuntos(BASE_SELECT + " WHERE d.id = :departamentoId",
                 Map.of("departamentoId", departamentoId));

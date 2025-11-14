@@ -32,6 +32,8 @@ public class CorsConfig {
         source.registerCorsConfiguration("/api/**", general);
         source.registerCorsConfiguration("/uco-challenge/**", general);
         source.registerCorsConfiguration("/uco-challenge/api/v1/conjuntos/stream", sse);
+        source.registerCorsConfiguration("/api/v1/departamentos/stream", sse);
+        source.registerCorsConfiguration("/api/v1/ciudades/stream", sse);
         return new CorsWebFilter(source);
     }
 }
